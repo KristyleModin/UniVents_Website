@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/public/Reset_Password_Page.dart';
+import 'package:univents/src/views/public/auth.dart';
+import 'package:univents/src/views/public/dashboard.dart';
+
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -162,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                     width: 280,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final email = _emailFieldController.text.trim();
                         final password = _passwordFieldController.text;
 
@@ -172,7 +175,23 @@ class _SignInPageState extends State<SignInPage> {
                           );
                           return;
                         }
-                        // Go to Sign In Page
+
+                        final user = await signInWithEmailPassword(email, password);
+                        if (user != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Sign In Successful!"))
+                          );
+                           Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Dashboard()),
+                          );
+                          // Navigate to home page or dashboard
+                          // Navigator.pushReplacementNamed(context, '/home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Sign In Failed! Please check your credentials."))
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF182C8C),
@@ -227,8 +246,23 @@ class _SignInPageState extends State<SignInPage> {
                     height: 55,
                     width: 280,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Go to Log in w/ Google Page
+                      onPressed: () async {
+                        final user = await signinWithGoogle();
+                        if (user != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Google Sign In Successful!"))
+                          );
+                           Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Dashboard()),
+                          );
+                          // Navigate to home page or dashboard
+                          // Navigator.pushReplacementNamed(context, '/home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Google Sign In Failed!"))
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -236,7 +270,6 @@ class _SignInPageState extends State<SignInPage> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      // 
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -271,7 +304,6 @@ class _SignInPageState extends State<SignInPage> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      // 
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -304,7 +336,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                      
+                          // Navigate to Sign Up Page
                         },
                         child: Text(
                           "Sign Up",
