@@ -169,9 +169,9 @@ class _SignInPageState extends State<SignInPage> {
                         final email = _emailFieldController.text.trim();
                         final password = _passwordFieldController.text;
 
-                        if(email.isEmpty || password.isEmpty) {
+                        if (email.isEmpty || password.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please Fill Up All The fields to Sign In"))
+                            SnackBar(content: Text("Please fill out all fields")),
                           );
                           return;
                         }
@@ -179,17 +179,15 @@ class _SignInPageState extends State<SignInPage> {
                         final user = await signInWithEmailPassword(email, password);
                         if (user != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Sign In Successful!"))
+                            SnackBar(content: Text("Sign In Successful!")),
                           );
-                           Navigator.pushReplacement(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => Dashboard()),
                           );
-                          // Navigate to home page or dashboard
-                          // Navigator.pushReplacementNamed(context, '/home');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Sign In Failed! Please check your credentials."))
+                            SnackBar(content: Text("Sign In Failed! Please check your credentials.")),
                           );
                         }
                       },
@@ -256,8 +254,7 @@ class _SignInPageState extends State<SignInPage> {
                             context,
                             MaterialPageRoute(builder: (context) => Dashboard()),
                           );
-                          // Navigate to home page or dashboard
-                          // Navigator.pushReplacementNamed(context, '/home');
+                          // Go to Dashboard
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Google Sign In Failed!"))
