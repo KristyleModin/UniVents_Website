@@ -30,7 +30,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Resset Password",
+              "Reset Password",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 32,
