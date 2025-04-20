@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.all(5),
           child: Container(
-            height: 700,
+            height: 800,
             width: 500,
             child: Column(
               children: [
@@ -209,7 +209,94 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 18,
                 ),
-
+                SizedBox(
+                  height: 55,
+                  width: 280,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    // 
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/images/google_logo.png',
+                          height: 24,
+                          width: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "Login with Google",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF1C1B1F), 
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                SizedBox(
+                  height: 55,
+                  width: 280,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    // 
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/images/facebook_logo.png',
+                          height: 24,
+                          width: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "Login with Facebook",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF1C1B1F), 
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Color(0xFF182C8C),
+                        fontSize: 14,
+                      ),
+                    )
+                  ],
+                ),
               ],
             ),
           ),
