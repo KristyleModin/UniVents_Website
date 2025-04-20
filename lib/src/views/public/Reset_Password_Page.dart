@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:univents/src/views/public/auth.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -8,6 +9,7 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final _auth = AuthService();
   final TextEditingController _emailFieldController = TextEditingController();
 
   @override
@@ -70,7 +72,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               width: 280,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final email = _emailFieldController.text.trim();
 
                   if (email.isEmpty) {
@@ -79,6 +81,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     );
                     return;
                   }
+
+                  await _auth.sendPasswordResetLink(email); 
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("A link to reset your password has been sent to your email.")));
+                  Navigator.pop(context);
                   // Send Email to DB to get the code
                 },
                 style: ElevatedButton.styleFrom(
