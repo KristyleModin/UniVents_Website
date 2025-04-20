@@ -10,22 +10,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool obscureText = true;
   bool _isSwitchOn = false;
-  bool _isSwitchOff = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
           child: Container(
-            height: 600,
-            width: 600,
+            height: 700,
+            width: 500,
             child: Column(
               children: [
                 Image.asset(
                   "lib/images/univents_logo.png",
-                  width: 250,
+                  width: 200,
                   height: 150,
                 ),
                 Text(
@@ -163,33 +162,54 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Row(
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        Text(
-                          "SIGN IN",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white,
+                        Center(
+                          child: Text(
+                            "SIGN IN",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                        Container(
-                          height: 35,
-                          width: 35,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF4554F1),
-                            shape: BoxShape.circle,
+                        Positioned(
+                          right: 0,
+                          child: Container(
+                            height: 35,
+                            width: 35,
+                            decoration: BoxDecoration(
+                              color: Color(0xFF3D56F0),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.arrow_forward,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        )
+                        ),
                       ],
                     ),
                   ),
-                )
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Text(
+                  'OR',
+                  style: TextStyle(
+                    color: Color(0xff9D9898),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+
               ],
             ),
           ),
