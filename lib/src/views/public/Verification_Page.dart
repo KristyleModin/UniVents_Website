@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:univents/src/views/public/Sign_In_Page.dart';
 
 class VerificationPage extends StatefulWidget {
   const VerificationPage({super.key});
@@ -182,16 +183,21 @@ class _VerificationPageState extends State<VerificationPage> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
-                  final otp = _otpFieldController.text.trim();
+                  // final otp = _otpFieldController.text.trim();
 
-                  if (otp.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Please fill in your otp number"),
-                      ),
-                    );
-                    return;
-                  }
+                  // if (otp.isEmpty) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     const SnackBar(
+                  //       content: Text("Please fill in your otp number"),
+                  //     ),
+                  //   );
+                  //   return;
+                  // }
+                   Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInPage()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("A link to reset your password has been sent to your email.")));
                   // Send Email to DB to get the code
                 },
                 style: ElevatedButton.styleFrom(
