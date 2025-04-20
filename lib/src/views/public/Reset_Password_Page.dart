@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:univents/src/views/public/Verification_Page.dart';
 import 'package:univents/src/views/public/auth.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -82,9 +83,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     return;
                   }
 
-                  await _auth.sendPasswordResetLink(email); 
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("A link to reset your password has been sent to your email.")));
-                  Navigator.pop(context);
+                  // await _auth.sendPasswordResetLink(email); 
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => VerificationPage()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("A verification code has been sent to your email.")));
                   // Send Email to DB to get the code
                 },
                 style: ElevatedButton.styleFrom(
