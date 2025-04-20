@@ -302,20 +302,15 @@ class _SignInPageState extends State<SignInPage> {
                           fontSize: 14
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          // Go to Sign Up Page
+                      TextButton(
+                        onPressed: () {
+                      
                         },
-                        child: TextButton(
-                          onPressed: () {
-
-                          },
-                          child: Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              color: Color(0xFF182C8C),
-                              fontSize: 14,
-                            ),
+                        child: Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Color(0xFF182C8C),
+                            fontSize: 14,
                           ),
                         ),
                       )
