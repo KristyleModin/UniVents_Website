@@ -8,86 +8,92 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
-
   final TextEditingController _emailFieldController = TextEditingController();
 
   @override
-  void dispose () {
+  void dispose() {
     _emailFieldController.dispose();
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
-      body: Container(
-        height: 500,
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Resset Password",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 40,
-                ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(left: 32.0, top: 150.0, right: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Resset Password",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 32,
               ),
-              Text(
-                "Please enter your email address to request a password reset",
-                style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 24,
-                ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Please enter your email address to request a password reset",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
               ),
-               TextField(
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: 500,
+              child: TextField(
                 controller: _emailFieldController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.email_outlined),
-                  hintText: "abc@email.com",  
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: "abc@email.com",
+                  contentPadding: const EdgeInsets.symmetric(vertical: 18.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Color(0xFFE4DFDF),
-                    ),
+                    borderSide: const BorderSide(color: Color(0xFFE4DFDF)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Color(0xFFE4DFDF),
-                      width: 2.0,
-                    ),
+                    borderSide: const BorderSide(color: Color(0xFFE4DFDF), width: 2.0),
                   ),
                 ),
               ),
-              ElevatedButton(
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: 280,
+              height: 55,
+              child: ElevatedButton(
                 onPressed: () {
                   final email = _emailFieldController.text.trim();
-          
-                  if(email.isEmpty) {
+
+                  if (email.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Please Fill Up The fields to Sign In"))
+                      const SnackBar(content: Text("Please fill in your email address")),
                     );
                     return;
                   }
-                  // Send The email to get the verification Code
+                  // Send Email to DB to get the code
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF182C8C),
+                  backgroundColor: const Color(0xFF182C8C),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  padding: EdgeInsets.zero,
                 ),
                 child: Stack(
-                  alignment: Alignment.center,
                   children: [
                     Center(
                       child: Text(
                         "SEND",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: Colors.white,
@@ -95,26 +101,28 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       ),
                     ),
                     Positioned(
-                      right: 0,
+                      right: 8,
+                      top: 8,
+                      bottom: 8,
                       child: Container(
-                        height: 35,
-                        width: 35,
-                        decoration: BoxDecoration(
+                        width: 34,
+                        height: 34,
+                        decoration: const BoxDecoration(
                           color: Color(0xFF3D56F0),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.arrow_forward,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
