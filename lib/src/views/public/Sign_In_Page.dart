@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:univents/src/views/public/Reset_Password_Page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -138,9 +139,12 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          // Go to Forgot Password Page
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => ResetPasswordPage()
+                            ),
+                          );
                         },
                         child: Text(
                           "Forgot Password?",
@@ -301,11 +305,16 @@ class _SignInPageState extends State<SignInPage> {
                         onTap: () {
                           // Go to Sign Up Page
                         },
-                        child: Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Color(0xFF182C8C),
-                            fontSize: 14,
+                        child: TextButton(
+                          onPressed: () {
+                            
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Color(0xFF182C8C),
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       )
