@@ -35,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Image.asset(
                     "lib/images/univents_logo.png",
-                    width: 125,
-                    height: 125,
+                    width: 130,
+                    height: 130,
                   ),
                   Text(
                     "UniVents",
