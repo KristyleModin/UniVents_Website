@@ -22,6 +22,7 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -307,7 +308,7 @@ class _SignInPageState extends State<SignInPage> {
                         },
                         child: TextButton(
                           onPressed: () {
-                            
+
                           },
                           child: Text(
                             "Sign Up",
