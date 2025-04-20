@@ -148,3 +148,9 @@ Future getUser() async {
     imageUrl = user.photoURL;
   }
 }
+
+class AuthService {
+  Future<void> sendPasswordResetLink(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+}
