@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/public/Reset_Password_Page.dart';
+import 'package:univents/src/views/public/reset_Password_Page.dart';
 import 'package:univents/src/views/public/auth.dart';
 import 'package:univents/src/views/public/dashboard.dart';
 

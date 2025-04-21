@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/public/Sign_In_Page.dart';
+import 'package:univents/src/views/public/sign_In_Page.dart';
 import 'package:univents/src/views/public/auth.dart';
 
 

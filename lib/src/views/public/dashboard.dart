@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/public/Sign_In_Page.dart';
+import 'package:univents/src/views/public/sign_In_Page.dart';
 import 'package:univents/src/views/public/auth.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,11 +24,13 @@ class Dashboard extends StatelessWidget {
               width: 280,
               child: ElevatedButton(
                 onPressed: () async {
+                  // ignore: unused_local_variable
                   final user = await signOut();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Signed out successfully!")),
                   );
                   Navigator.pushReplacement(
+                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(builder: (context) => SignInPage()),
                   );

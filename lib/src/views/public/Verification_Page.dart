@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:univents/src/views/public/Sign_In_Page.dart';
+import 'package:univents/src/views/public/sign_In_Page.dart';
 
 class VerificationPage extends StatefulWidget {
   const VerificationPage({super.key});
