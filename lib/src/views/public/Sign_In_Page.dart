@@ -3,7 +3,6 @@ import 'package:univents/src/views/public/Reset_Password_Page.dart';
 import 'package:univents/src/views/public/auth.dart';
 import 'package:univents/src/views/public/dashboard.dart';
 
-
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -16,10 +15,11 @@ class _SignInPageState extends State<SignInPage> {
   bool _isSwitchOn = false;
 
   final TextEditingController _emailFieldController = TextEditingController();
-  final TextEditingController _passwordFieldController = TextEditingController();
+  final TextEditingController _passwordFieldController =
+      TextEditingController();
 
   @override
-  void dispose () {
+  void dispose() {
     _emailFieldController.dispose();
     _passwordFieldController.dispose();
     super.dispose();
@@ -33,9 +33,7 @@ class _SignInPageState extends State<SignInPage> {
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 500,
-              ),
+              constraints: BoxConstraints(maxWidth: 500),
               child: Column(
                 children: [
                   Image.asset(
@@ -45,12 +43,9 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   Text(
                     "UniVents",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 60,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 60),
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -70,9 +65,7 @@ class _SignInPageState extends State<SignInPage> {
                       hintText: "abc@email.com",  
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: Color(0xFFE4DFDF),
-                        ),
+                        borderSide: BorderSide(color: Color(0xFFE4DFDF)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -97,17 +90,13 @@ class _SignInPageState extends State<SignInPage> {
                           });
                         },
                         icon: Icon(
-                          obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          obscureText ? Icons.visibility_off : Icons.visibility,
                         ),
                       ),
                       hintText: "Your password",
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: Color(0xFFE4DFDF),
-                        ),
+                        borderSide: BorderSide(color: Color(0xFFE4DFDF)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -171,23 +160,34 @@ class _SignInPageState extends State<SignInPage> {
 
                         if (email.isEmpty || password.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please fill out all fields")),
+                            SnackBar(
+                              content: Text("Please fill out all fields"),
+                            ),
                           );
                           return;
                         }
 
-                        final user = await signInWithEmailPassword(email, password);
+                        final user = await signInWithEmailPassword(
+                          email,
+                          password,
+                        );
                         if (user != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Sign In Successful!")),
                           );
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => Dashboard()),
+                            MaterialPageRoute(
+                              builder: (context) => Dashboard(),
+                            ),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Sign In Failed! Please check your credentials.")),
+                            SnackBar(
+                              content: Text(
+                                "Sign In Failed! Please check your credentials.",
+                              ),
+                            ),
                           );
                         }
                       },
@@ -245,21 +245,7 @@ class _SignInPageState extends State<SignInPage> {
                     width: 280,
                     child: ElevatedButton(
                       onPressed: () async {
-                        final user = await signinWithGoogle();
-                        if (user != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Google Sign In Successful!"))
-                          );
-                           Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => Dashboard()),
-                          );
-                          // Go to Dashboard
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Google Sign In Failed!"))
-                          );
-                        }
+                        await signInWithGoogle(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -280,7 +266,7 @@ class _SignInPageState extends State<SignInPage> {
                             "Login with Google",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF1C1B1F), 
+                              color: Color(0xFF1C1B1F),
                             ),
                           ),
                         ],
@@ -314,7 +300,7 @@ class _SignInPageState extends State<SignInPage> {
                             "Login with Facebook",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF1C1B1F), 
+                              color: Color(0xFF1C1B1F),
                             ),
                           ),
                         ],
@@ -327,9 +313,7 @@ class _SignInPageState extends State<SignInPage> {
                     children: [
                       Text(
                         "Don't have an account? ",
-                        style: TextStyle(
-                          fontSize: 14
-                        ),
+                        style: TextStyle(fontSize: 14),
                       ),
                       TextButton(
                         onPressed: () {
@@ -342,7 +326,7 @@ class _SignInPageState extends State<SignInPage> {
                             fontSize: 14,
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],
