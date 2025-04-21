@@ -21,12 +21,12 @@ class Dashboard extends StatelessWidget {
                 onPressed: () async {
                   final user = await signOut();
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Signed out successfully!"))
-                    );
-                      Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignInPage()),
-                    );
+                    SnackBar(content: Text("Signed out successfully!")),
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -34,11 +34,11 @@ class Dashboard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                child: Text("Sign out")
+                child: Text("Sign out"),
               ),
             ),
           ],
-        )
+        ),
       ),
     );
   }
