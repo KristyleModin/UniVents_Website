@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:univents/src/views/public/Sign_In_Page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Don't forget to import Firestore
+import 'package:univents/src/views/public/dashboard.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -46,57 +50,123 @@ Future<User?> signInWithEmailPassword(String email, String password) async {
   return user;
 }
 
-Future<User?> signinWithGoogle() async {
+Future<void> signInWithGoogle(BuildContext context) async {
   await Firebase.initializeApp();
   User? user;
 
-  if (kIsWeb) {
-    GoogleAuthProvider authProvider = GoogleAuthProvider();
-
-    try {
-      final UserCredential userCredential =
-          await _auth.signInWithPopup(authProvider);
-      user = userCredential.user;
-    } catch (e) {
-      print(e);
-    }
-  } else {
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
-
-    if (googleSignInAccount != null) {
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
+  try {
+    if (kIsWeb) {
+      GoogleAuthProvider authProvider = GoogleAuthProvider()
+        ..setCustomParameters({'prompt': 'select_account'});
 
       try {
         final UserCredential userCredential =
-            await _auth.signInWithCredential(credential);
+            await _auth.signInWithPopup(authProvider);
         user = userCredential.user;
-      } on FirebaseAuthException catch (e) {
-        print('FirebaseAuthException: ${e.message}');
       } catch (e) {
-        print('Error: $e');
+        print(e);
       }
     }
+    else {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Google Sign In Cancelled")),
+        );
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      user = userCredential.user;
+    }
+
+    if (user != null) {
+      uid = user.uid;
+      name = user.displayName;
+      userEmail = user.email;
+      imageUrl = user.photoURL;
+
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setBool('auth', true);
+
+      // 🔍 Check Firestore for user's role
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('accounts')
+          .doc(user.uid)
+          .get();
+
+      if (doc.exists) {
+        String role = doc.get('role');
+        if (role.toLowerCase() == 'admin') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Dashboard()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Logged in successfully!",
+              ),
+            ),
+          );
+        } else {
+          // Not admin
+          await _auth.signOut();
+          await googleSignIn.signOut();
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('auth', false);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Access denied. Only admins can access this site. Please contact an administrator if you think this is a mistake.",
+              ),
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignInPage()),
+          );
+        }
+      } else {
+        // Account document doesn't exist
+        await _auth.signOut();
+        await googleSignIn.signOut();
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('auth', false);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "No account record found. Please contact an administrator.",
+            ),
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInPage()),
+        );
+      }
+    }
+  } catch (e) {
+    print("Sign in error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Something went wrong. Please try again.")),
+    );
   }
-
-  if (user != null) {
-    uid = user.uid;
-    name = user.displayName;
-    userEmail = user.email;
-    imageUrl = user.photoURL;
-
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setBool('auth', true);
-  }
-
-  return user;
 }
+
 
 Future<User?> registerWithEmailPassword(String email, String password) async {
   await Firebase.initializeApp();
@@ -119,19 +189,30 @@ Future<User?> registerWithEmailPassword(String email, String password) async {
 }
 
 Future<String> signOut() async {
-  await _auth.signOut();
-  await googleSignIn.signOut();
+  try {
+    // Sign out from Firebase
+    await _auth.signOut();
 
-  SharedPreferences preferences = await SharedPreferences.getInstance();
-  preferences.setBool('auth', false);
+    // Disconnect from Google completely
+    await googleSignIn.disconnect();
+    await googleSignIn.signOut();
 
-  uid = null;
-  userEmail = null;
-  name = null;
-  imageUrl = null;
+    // Clear locally stored values
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.setBool('auth', false);
 
-  return 'User Signed Out';
+    uid = null;
+    userEmail = null;
+    name = null;
+    imageUrl = null;
+
+    return 'User Signed Out';
+  } catch (e) {
+    print('Sign out error: $e');
+    return 'Error signing out';
+  }
 }
+
 
 Future getUser() async {
   await Firebase.initializeApp();
