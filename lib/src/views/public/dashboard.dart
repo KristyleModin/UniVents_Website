@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:univents/src/services/auth.dart';
 import 'package:univents/src/views/customwidgets/categories.dart';
 import 'package:univents/src/views/customwidgets/dashboard_cards.dart';
+import 'package:univents/src/views/public/sign_In_Page.dart';
+import 'package:univents/src/views/public/view_all_events_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -41,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
                 right: 30,
                 child: GestureDetector(
                   onTap: () {
-                    // ACTION
+                    // ACTION for notifications
                   },
                   child: Image.asset(
                     'lib/images/notification_bell_logo.png',
@@ -114,7 +117,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           child: TextButton.icon(
                             onPressed: () {
-                              // ACTION
+                              // ACTION for filters
                             },
                             icon: const Icon(Icons.filter_list, size: 20, color: Colors.white),
                             label: const Text(
@@ -180,37 +183,93 @@ class _DashboardState extends State<Dashboard> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Upcoming Events",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF182C8C),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Upcoming Events",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF182C8C),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ViewAllEventsPage(events: [],)),
+                        );
+                      },
+                      child: const Text(
+                        "View All",
+                        style: TextStyle(
+                          color: Color(0xFF182C8C),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 20),
-              FutureBuilder<List<DashboardCard>>(
-                future: _futureCards,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No events found.'));
-                  } else {
-                    return Wrap(
-                      spacing: 15,
-                      runSpacing: 15,
-                      children: snapshot.data!,
-                    );
-                  }
-                },
-              ),
-            ],
+                const SizedBox(height: 10),
+                FutureBuilder<List<DashboardCard>>(
+                  future: _futureCards,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No events found.'));
+                    } else {
+                      final events = snapshot.data!;
+                      final limitedEvents = events.take(10).toList(); // Limit to 10 events
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 280,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: limitedEvents.map((card) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 15),
+                                    child: card,
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              final user = await signOut();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Signed out successfully!")),
+                              );
+                              if (!mounted) return; // Add this to prevent errors after async
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignInPage()),
+                              );
+                            },
+                            child: const Text('Sign Out'),
+                          ),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

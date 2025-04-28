@@ -59,15 +59,10 @@ Future<void> signInWithGoogle(BuildContext context) async {
       GoogleAuthProvider authProvider = GoogleAuthProvider()
         ..setCustomParameters({'prompt': 'select_account'});
 
-      try {
-        final UserCredential userCredential =
-            await _auth.signInWithPopup(authProvider);
-        user = userCredential.user;
-      } catch (e) {
-        print(e);
-      }
-    }
-    else {
+      final UserCredential userCredential =
+          await _auth.signInWithPopup(authProvider);
+      user = userCredential.user;
+    } else {
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
 
@@ -100,7 +95,6 @@ Future<void> signInWithGoogle(BuildContext context) async {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setBool('auth', true);
 
-      // 🔍 Check Firestore for user's role
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('accounts')
           .doc(user.uid)
@@ -114,14 +108,9 @@ Future<void> signInWithGoogle(BuildContext context) async {
             MaterialPageRoute(builder: (context) => Dashboard()),
           );
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Logged in successfully!",
-              ),
-            ),
+            SnackBar(content: Text("Logged in successfully!")),
           );
         } else {
-          // Not admin
           await _auth.signOut();
           await googleSignIn.signOut();
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -130,7 +119,7 @@ Future<void> signInWithGoogle(BuildContext context) async {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                "Access denied. Only admins can access this site. Please contact an administrator if you think this is a mistake.",
+                "Access denied. Only admins can access this site.",
               ),
             ),
           );
@@ -140,7 +129,6 @@ Future<void> signInWithGoogle(BuildContext context) async {
           );
         }
       } else {
-        // Account document doesn't exist
         await _auth.signOut();
         await googleSignIn.signOut();
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -167,7 +155,6 @@ Future<void> signInWithGoogle(BuildContext context) async {
   }
 }
 
-
 Future<User?> registerWithEmailPassword(String email, String password) async {
   await Firebase.initializeApp();
   User? user;
@@ -190,14 +177,10 @@ Future<User?> registerWithEmailPassword(String email, String password) async {
 
 Future<String> signOut() async {
   try {
-    // Sign out from Firebase
     await _auth.signOut();
-
-    // Disconnect from Google completely
     await googleSignIn.disconnect();
     await googleSignIn.signOut();
 
-    // Clear locally stored values
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setBool('auth', false);
 
@@ -213,8 +196,7 @@ Future<String> signOut() async {
   }
 }
 
-
-Future getUser() async {
+Future<bool> getUser() async {
   await Firebase.initializeApp();
 
   SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -227,6 +209,9 @@ Future getUser() async {
     name = user.displayName;
     userEmail = user.email;
     imageUrl = user.photoURL;
+    return true;
+  } else {
+    return false;
   }
 }
 

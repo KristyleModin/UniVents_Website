@@ -23,6 +23,8 @@ class DashboardCard extends StatelessWidget {
     final String title = map['title'] ?? '';
     final String banner = map['banner'] ?? '';
 
+    print('Loading event: title=$title, banner=$banner');
+
     return DashboardCard(
       title: title,
       banner: banner,
@@ -49,14 +51,12 @@ class DashboardCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      height: 260,
+      height: 300,
       width: 250,
       child: Card(
         elevation: 0,
         color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -66,19 +66,15 @@ class DashboardCard extends StatelessWidget {
                 children: [
                   Container(
                     margin: const EdgeInsets.only(bottom: 8),
-                    child: ClipRRect(
+                    width: double.infinity,
+                    height: 140,
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        banner,
+                      image: DecorationImage(
+                        image: (banner != "")
+                            ? NetworkImage(banner)
+                            : const AssetImage('assets/default_image.png') as ImageProvider,
                         fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: 140,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey.shade300,
-                          height: 140,
-                          width: double.infinity,
-                          child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                        ),
                       ),
                     ),
                   ),
@@ -136,15 +132,16 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(Icons.location_on_rounded, color: Colors.grey, size: 16),
+                  const Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.grey,
+                    size: 16,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       partialLocation,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
