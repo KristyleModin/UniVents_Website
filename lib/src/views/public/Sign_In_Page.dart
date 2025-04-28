@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/public/reset_Password_Page.dart';
-import 'package:univents/src/views/public/auth.dart';
+import 'package:univents/src/services/auth.dart';
 import 'package:univents/src/views/public/dashboard.dart';
 
 class SignInPage extends StatefulWidget {

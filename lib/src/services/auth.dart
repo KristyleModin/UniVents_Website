@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:univents/src/views/public/sign_In_Page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Don't forget to import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:univents/src/views/public/dashboard.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;

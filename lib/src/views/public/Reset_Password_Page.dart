@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/public/Verification_Page.dart';
-import 'package:univents/src/views/public/auth.dart';
+import 'package:univents/src/services/auth.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});

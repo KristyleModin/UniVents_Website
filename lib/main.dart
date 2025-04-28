@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/public/sign_In_Page.dart';
-import 'package:univents/src/views/public/auth.dart';
+import 'package:univents/src/views/public/dashboard.dart';
+// import 'package:univents/src/views/public/sign_In_Page.dart';
+import 'package:univents/src/services/auth.dart';
 
 
 void main() async {
@@ -46,7 +47,7 @@ class _MyAppState extends State<MyApp> {
       title: "Flutter Web",
       theme: ThemeData(brightness: Brightness.light),
       debugShowCheckedModeBanner: false,
-      home: SignInPage(),
+      home: Dashboard(),
     );
   }
 }
