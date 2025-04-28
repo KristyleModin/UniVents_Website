@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/customwidgets/categories.dart';
 import 'package:univents/src/views/customwidgets/dashboard_cards.dart';
-
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -11,6 +11,19 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  late Future<List<DashboardCard>> _futureCards;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureCards = fetchDashboardCards();
+  }
+
+  Future<List<DashboardCard>> fetchDashboardCards() async {
+    final snapshot = await FirebaseFirestore.instance.collection('events').get();
+    return snapshot.docs.map((doc) => DashboardCard.fromMap(doc.data())).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +126,7 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 40), 
+                  const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Wrap(
@@ -179,41 +192,28 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               const SizedBox(height: 20),
-              Wrap(
-                spacing: 15,
-                runSpacing: 15,
-                children: [
-                  DashboardCard(
-                    title: "Basketball Tournament",
-                    banner: "https://images.unsplash.com/photo-1579972665334-22c5bdf7a6c8",
-                    dateTimeStart: DateTime.now().add(const Duration(days: 3)),
-                    location: "Jacinto Gym",
-                  ),
-                  DashboardCard(
-                    title: "Music Festival",
-                    banner: "https://images.unsplash.com/photo-1508970707-db1e1a0f9b1b",
-                    dateTimeStart: DateTime.now().add(const Duration(days: 5)),
-                    location: "People's Park",
-                  ),
-                  DashboardCard(
-                    title: "Art Exhibit",
-                    banner: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620",
-                    dateTimeStart: DateTime.now().add(const Duration(days: 7)),
-                    location: "Museo Dabawenyo",
-                  ),
-                  DashboardCard(
-                    title: "E-Sports Finals",
-                    banner: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61",
-                    dateTimeStart: DateTime.now().add(const Duration(days: 10)),
-                    location: "Lanang Premier Center",
-                  ),
-                ],
+              FutureBuilder<List<DashboardCard>>(
+                future: _futureCards,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No events found.'));
+                  } else {
+                    return Wrap(
+                      spacing: 15,
+                      runSpacing: 15,
+                      children: snapshot.data!,
+                    );
+                  }
+                },
               ),
             ],
           ),
         ),
       ),
- // Empty body since categories are now inside appbar
     );
   }
 }
