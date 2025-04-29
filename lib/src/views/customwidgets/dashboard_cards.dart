@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:univents/src/views/public/event_details.dart';
 
 class DashboardCard extends StatelessWidget {
   final String title;
   final String banner;
   final DateTime dateTimeStart;
   final String location;
+  final String description;
 
   const DashboardCard({
     super.key,
@@ -14,6 +16,7 @@ class DashboardCard extends StatelessWidget {
     required this.banner,
     required this.dateTimeStart,
     required this.location,
+    required this.description,
   });
 
   factory DashboardCard.fromMap(Map<String, dynamic> map) {
@@ -22,6 +25,7 @@ class DashboardCard extends StatelessWidget {
     final String location = map['location'] ?? '';
     final String title = map['title'] ?? '';
     final String banner = map['banner'] ?? '';
+    final String description = map['description'] ?? '';
 
     // print('Loading event: title=$title, banner=$banner');
 
@@ -30,6 +34,7 @@ class DashboardCard extends StatelessWidget {
       banner: banner,
       dateTimeStart: dateTime,
       location: location,
+      description: description,
     );
   }
 
@@ -53,7 +58,22 @@ class DashboardCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4),
       height: 300,
       width: 250,
-      child: Card(
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(
+              builder: (context) => ViewEvents(
+                title: title,
+                description: description,
+                location: location,
+                dateTimeStart: dateTimeStart,
+                banner: banner,
+              )),
+              );
+              
+        }, 
+        child: Card(
         elevation: 0,
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -150,6 +170,7 @@ class DashboardCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
