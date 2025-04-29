@@ -23,7 +23,7 @@ class DashboardCard extends StatelessWidget {
     final String title = map['title'] ?? '';
     final String banner = map['banner'] ?? '';
 
-    print('Loading event: title=$title, banner=$banner');
+    // print('Loading event: title=$title, banner=$banner');
 
     return DashboardCard(
       title: title,
