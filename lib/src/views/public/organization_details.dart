@@ -199,21 +199,6 @@ class ViewOrganization extends StatelessWidget {
                             fontStyle: FontStyle.normal,
                           ),
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          'Edit Organization',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 30),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -232,6 +217,23 @@ class ViewOrganization extends StatelessWidget {
                               ),
                             ),
                           );
+                        },
+                        child: Text(
+                          'Edit Organization',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 30),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: () {
+                          
                         },
                         child: Text(
                           'Delete Organization',
