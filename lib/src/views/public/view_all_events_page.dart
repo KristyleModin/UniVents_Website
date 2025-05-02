@@ -3,24 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:univents/src/views/customwidgets/events_cards.dart';
 
 class ViewAllEventsPage extends StatefulWidget {
-  const ViewAllEventsPage({super.key, required List<DashboardCard> events});
+  const ViewAllEventsPage({super.key, required List<EventCard> events});
 
   @override
   State<ViewAllEventsPage> createState() => _ViewAllEventsPageState();
 }
 
 class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
-  late Future<List<DashboardCard>> _futureCards;
+  late Future<List<EventCard>> _futureEventsCards;
 
   @override
   void initState() {
     super.initState();
-    _futureCards = fetchAllDashboardCards();
+    _futureEventsCards = fetchAllEventCards();
   }
 
-  Future<List<DashboardCard>> fetchAllDashboardCards() async {
+  Future<List<EventCard>> fetchAllEventCards() async {
     final snapshot = await FirebaseFirestore.instance.collection('events').get();
-    return snapshot.docs.map((doc) => DashboardCard.fromMap(doc.data())).toList();
+    return snapshot.docs.map((doc) => EventCard.fromMap(doc.data())).toList();
   }
 
   @override
@@ -40,8 +40,8 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: FutureBuilder<List<DashboardCard>>(
-          future: _futureCards,
+        child: FutureBuilder<List<EventCard>>(
+          future: _futureEventsCards,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
