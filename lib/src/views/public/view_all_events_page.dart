@@ -1,47 +1,60 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/customwidgets/events_cards.dart';
+import 'package:univents/src/views/customwidgets/manage_button.dart';
+import 'package:univents/src/views/public/create_event_page.dart';
 
 class ViewAllEventsPage extends StatefulWidget {
-  const ViewAllEventsPage({super.key, required List<EventCard> events});
+  const ViewAllEventsPage({super.key});
 
   @override
   State<ViewAllEventsPage> createState() => _ViewAllEventsPageState();
 }
 
 class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
-  late Future<List<EventCard>> _futureEventsCards;
+  late Future<List<EventsCard>> _futureCards;
 
   @override
   void initState() {
     super.initState();
-    _futureEventsCards = fetchAllEventCards();
+    _futureCards = fetchAllDashboardCards();
   }
 
-  Future<List<EventCard>> fetchAllEventCards() async {
-    final snapshot = await FirebaseFirestore.instance.collection('events').get();
-    return snapshot.docs.map((doc) => EventCard.fromMap(doc.data())).toList();
+  Future<List<EventsCard>> fetchAllDashboardCards() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('events')
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      final eventRef = doc.reference;
+
+      return EventsCard.fromMap(
+        data,
+        eventRef,
+        onVisibilityChanged: () async {
+          final newVisibility = !(data['isVisible'] ?? true);
+          await eventRef.update({'isVisible': newVisibility});
+          setState(() {
+            _futureCards = fetchAllDashboardCards();
+          });
+        },
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "All Events",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-          ),
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        title: const Text("All Events", style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xFF182C8C),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: FutureBuilder<List<EventCard>>(
-          future: _futureEventsCards,
+        child: FutureBuilder<List<EventsCard>>(
+          future: _futureCards,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -52,6 +65,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
             } else {
               final events = snapshot.data!;
               return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 100), // Prevents overlap with button
                 child: Wrap(
                   spacing: 15,
                   runSpacing: 15,
@@ -62,6 +76,19 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
           },
         ),
       ),
+      floatingActionButton: ManageButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateEventPage()),
+          ).then((_) {
+            setState(() {
+              _futureCards = fetchAllDashboardCards(); // Refresh after returning
+            });
+          });
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

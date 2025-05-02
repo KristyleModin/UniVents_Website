@@ -1,8 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/services/auth.dart'; // your auth file
 import 'package:univents/src/views/public/dashboard.dart';
-import 'package:univents/src/views/public/sign_In_Page.dart';
+// import 'package:univents/src/views/public/sign_In_Page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +23,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -35,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       isLoggedIn = userLoggedIn;
       loading = false; // <--- After checking, stop loading
     });
-    print("User ID: $uid");
+    // print("User ID: $uid");
   }
 
   @override
@@ -44,19 +48,30 @@ class _MyAppState extends State<MyApp> {
     getUserInfo();
   }
 
-  @override
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: "Flutter Web",
+//       theme: ThemeData(brightness: Brightness.light),
+//       debugShowCheckedModeBanner: false,
+//       home: loading 
+//           ? Scaffold(
+//               body: Center(child: CircularProgressIndicator()),
+//             )
+//           : isLoggedIn 
+//             ? Dashboard() 
+//             : SignInPage(),
+//     );
+//   }
+// }
+
+@override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Flutter Web",
       theme: ThemeData(brightness: Brightness.light),
       debugShowCheckedModeBanner: false,
-      home: loading 
-          ? Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            )
-          : isLoggedIn 
-            ? Dashboard() 
-            : SignInPage(),
+      home: Dashboard(), // Directly go to Dashboard
     );
   }
 }
