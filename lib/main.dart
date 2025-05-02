@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:univents/src/services/auth.dart'; // your auth file
 import 'package:univents/src/views/public/dashboard.dart';
 import 'package:univents/src/views/public/sign_In_Page.dart';
+// import 'package:univents/src/views/public/sign_In_Page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,3 +61,14 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+// @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: "Flutter Web",
+//       theme: ThemeData(brightness: Brightness.light),
+//       debugShowCheckedModeBanner: false,
+//       home: Dashboard(), // Directly go to Dashboard
+//     );
+//   }
+// }
