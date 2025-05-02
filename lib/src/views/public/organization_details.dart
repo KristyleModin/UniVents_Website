@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/public/edit_organization.dart';
 import 'package:univents/src/views/public/dashboard.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:univents/src/views/public/edit_organization.dart';
 
 class ViewOrganization extends StatelessWidget {
   final String acronym;
@@ -29,44 +29,82 @@ class ViewOrganization extends StatelessWidget {
     required this.uid,
   });
 
+  // Function to delete organization
+  Future<void> deleteOrganization(String uid) async {
+    try {
+      await FirebaseFirestore.instance.collection('organizations').doc(uid).delete();
+    } catch (e) {
+      print("Error deleting organization: $e");
+    }
+  }
+
+  // Function to show delete confirmation dialog
+  void _showDeleteConfirmation(BuildContext context, String uid) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('This action will permanently delete this organization.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();  // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await deleteOrganization(uid);
+                Navigator.of(context).pop();  // Close the dialog
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard()),
+                  (route) => false, // Removes all previous routes
+                );
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Get screen width and height
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Define a dynamic banner height based on screen size
-    double bannerHeight = screenHeight * 0.5; // 30% of screen height
+    // Dynamic banner height based on screen size
+    double bannerHeight = screenHeight * 0.5;
     if (screenWidth < 600) {
-      // If it's a phone, make it smaller
       bannerHeight = screenHeight * 0.25;
     } else if (screenWidth < 900) {
-      // If it's a tablet, slightly larger
       bannerHeight = screenHeight * 0.35;
     }
 
     return Scaffold(
       appBar: AppBar(
-      title: const Text(
-        "Organization Details",
-        style: TextStyle(color: Colors.white),
+        title: const Text(
+          "Organization Details",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF182C8C),
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          },
+        ),
       ),
-      backgroundColor: const Color(0xFF182C8C),
-      iconTheme: const IconThemeData(color: Colors.white),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          );
-        },
-      ),
-    ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             if (banner != '')
               ClipRRect(
@@ -80,7 +118,6 @@ class ViewOrganization extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(48.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
                     children: [
@@ -88,16 +125,14 @@ class ViewOrganization extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
                           logo,
-                          width:
-                              screenWidth < 600
-                                  ? 100 // small size for phones
-                                  : screenWidth < 900
-                                  ? 150 // medium size for tablets
-                                  : 200, // larger for desktops
-                          height:
-                              screenHeight < 600
-                                  ? 100
-                                  : screenHeight < 900
+                          width: screenWidth < 600
+                              ? 100
+                              : screenWidth < 900
+                                  ? 150
+                                  : 200,
+                          height: screenHeight < 600
+                              ? 100
+                              : screenHeight < 900
                                   ? 150
                                   : 200,
                           fit: BoxFit.cover,
@@ -105,10 +140,9 @@ class ViewOrganization extends StatelessWidget {
                       ),
                       SizedBox(width: 20),
                       SizedBox(
-                        height:
-                            screenHeight < 600
-                                ? 100
-                                : screenHeight < 900
+                        height: screenHeight < 600
+                            ? 100
+                            : screenHeight < 900
                                 ? 150
                                 : 200,
                         child: Column(
@@ -154,7 +188,6 @@ class ViewOrganization extends StatelessWidget {
                   ),
                   SizedBox(height: 30),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Row(
                         children: [
@@ -207,7 +240,6 @@ class ViewOrganization extends StatelessWidget {
                           textStyle: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
-                            fontStyle: FontStyle.normal,
                           ),
                         ),
                         onPressed: () {
@@ -244,7 +276,7 @@ class ViewOrganization extends StatelessWidget {
                           backgroundColor: Colors.red,
                         ),
                         onPressed: () {
-                          
+                          _showDeleteConfirmation(context, uid);  // Show confirmation dialog
                         },
                         child: Text(
                           'Delete Organization',
