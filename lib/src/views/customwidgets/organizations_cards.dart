@@ -13,6 +13,7 @@ class OrganizationCard extends StatelessWidget {
   final String logo;
   final String mobile;
   final String name;
+  final String uid;
 
   const OrganizationCard({
     super.key,
@@ -25,6 +26,7 @@ class OrganizationCard extends StatelessWidget {
     required this.logo,
     required this.mobile,
     required this.name,
+    required this.uid,
   });
 
   factory OrganizationCard.fromMap(Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class OrganizationCard extends StatelessWidget {
     final String logo = map['logo'] ?? '';
     final String mobile = map['mobile'] ?? '';
     final String name = map['name'] ?? '';
+    final String uid = map['uid'] ?? '';
 
     return OrganizationCard(
       acronym: acronym,
@@ -48,6 +51,7 @@ class OrganizationCard extends StatelessWidget {
       logo: logo,
       mobile: mobile,
       name: name,
+      uid: uid,
     );
   }
 
@@ -72,6 +76,7 @@ class OrganizationCard extends StatelessWidget {
                 logo: logo,
                 mobile: mobile,
                 name: name,
+                uid: uid,
               )
             ),
           );
