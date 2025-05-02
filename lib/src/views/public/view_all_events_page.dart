@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:univents/src/views/customwidgets/dashboard_cards.dart';
+import 'package:univents/src/views/customwidgets/events_cards.dart';
 
 class ViewAllEventsPage extends StatefulWidget {
   const ViewAllEventsPage({super.key, required List<DashboardCard> events});
