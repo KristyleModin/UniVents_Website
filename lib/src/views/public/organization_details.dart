@@ -45,12 +45,17 @@ class ViewOrganization extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Organization Details",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF182C8C),
-        iconTheme: const IconThemeData(color: Colors.white),
+      title: const Text(
+        "Organization Details",
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: const Color(0xFF182C8C),
+      iconTheme: const IconThemeData(color: Colors.white),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+        },
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
