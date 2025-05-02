@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/public/edit_organization.dart';
+import 'package:univents/src/views/public/dashboard.dart';
+
 
 class ViewOrganization extends StatelessWidget {
   final String acronym;
@@ -54,9 +56,13 @@ class ViewOrganization extends StatelessWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
         },
       ),
+    ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
