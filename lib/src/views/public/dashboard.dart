@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:univents/src/services/auth.dart';
 import 'package:univents/src/views/customwidgets/categories.dart';
 import 'package:univents/src/views/customwidgets/events_cards.dart';
+import 'package:univents/src/views/customwidgets/organizations_cards.dart';
 import 'package:univents/src/views/public/sign_In_Page.dart';
 import 'package:univents/src/views/public/view_all_events_page.dart';
+import 'package:univents/src/views/public/view_all_organizations_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -15,17 +17,24 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   late Future<List<EventCard>> _futureEventsCards;
+  late Future<List<OrganizationCard>> _futureOrganizationCards;
 
   @override
   void initState() {
     super.initState();
     _futureEventsCards = fetchEventCards();
+    _futureOrganizationCards = fetchOrganizationCards();
   }
 
   Future<List<EventCard>> fetchEventCards() async {
     final snapshot = await FirebaseFirestore.instance.collection('events').get();
     return snapshot.docs.map((doc) => EventCard.fromMap(doc.data())).toList();
   }
+
+  Future<List<OrganizationCard>> fetchOrganizationCards() async {
+  final organizationSnapshot = await FirebaseFirestore.instance.collection('organizations').get();
+  return organizationSnapshot.docs.map((doc) => OrganizationCard.fromMap(doc.data())).toList();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +278,7 @@ class _DashboardState extends State<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            "Upcoming Events",
+                            "Organizations",
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -280,7 +289,7 @@ class _DashboardState extends State<Dashboard> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ViewAllEventsPage(events: [],)),
+                                MaterialPageRoute(builder: (context) => const ViewAllOrganizationsPage(organizations: [],)),
                               );
                             },
                             child: const Text(
@@ -295,18 +304,18 @@ class _DashboardState extends State<Dashboard> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      FutureBuilder<List<EventCard>>(
-                        future: _futureEventsCards,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                      FutureBuilder<List<OrganizationCard>>(
+                        future: _futureOrganizationCards,
+                        builder: (context, organizationSnapshot) {
+                          if (organizationSnapshot.connectionState == ConnectionState.waiting) {
                             return const Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return const Center(child: Text('No events found.'));
+                          } else if (organizationSnapshot.hasError) {
+                            return Center(child: Text('Error: ${organizationSnapshot.error}'));
+                          } else if (!organizationSnapshot.hasData || organizationSnapshot.data!.isEmpty) {
+                            return const Center(child: Text('No organizations found.'));
                           } else {
-                            final events = snapshot.data!;
-                            final limitedEvents = events.take(10).toList(); // Limit to 10 events
+                            final oprganizations = organizationSnapshot.data!;
+                            final limitedOrganizations = oprganizations.take(10).toList(); // Limit to 10 oprganizations
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,7 +325,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Row(
-                                      children: limitedEvents.map((card) {
+                                      children: limitedOrganizations.map((card) {
                                         return Padding(
                                           padding: const EdgeInsets.only(right: 15),
                                           child: card,
