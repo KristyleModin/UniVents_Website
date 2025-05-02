@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:univents/src/views/public/event_details.dart';
 
-class DashboardCard extends StatelessWidget {
+class EventCard extends StatelessWidget {
   final String title;
   final String banner;
   final DateTime dateTimeStart;
   final String location;
   final String description;
 
-  const DashboardCard({
+  const EventCard({
     super.key,
     required this.title,
     required this.banner,
@@ -19,7 +19,7 @@ class DashboardCard extends StatelessWidget {
     required this.description,
   });
 
-  factory DashboardCard.fromMap(Map<String, dynamic> map) {
+  factory EventCard.fromMap(Map<String, dynamic> map) {
     final Timestamp timestamp = map['datetimestart'];
     final DateTime dateTime = timestamp.toDate();
     final String location = map['location'] ?? '';
@@ -29,7 +29,7 @@ class DashboardCard extends StatelessWidget {
 
     // print('Loading event: title=$title, banner=$banner');
 
-    return DashboardCard(
+    return EventCard(
       title: title,
       banner: banner,
       dateTimeStart: dateTime,
