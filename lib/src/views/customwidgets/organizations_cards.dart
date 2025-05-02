@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:univents/src/views/public/organization_details.dart';
 
 class OrganizationCard extends StatelessWidget {
