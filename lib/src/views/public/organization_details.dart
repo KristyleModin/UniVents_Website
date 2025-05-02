@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:univents/src/views/public/edit_organization.dart';
 
 class ViewOrganization extends StatelessWidget {
   final String acronym;
@@ -10,6 +11,7 @@ class ViewOrganization extends StatelessWidget {
   final String logo;
   final String mobile;
   final String name;
+  final String uid;
 
   const ViewOrganization({
     super.key,
@@ -22,6 +24,7 @@ class ViewOrganization extends StatelessWidget {
     required this.logo,
     required this.mobile,
     required this.name,
+    required this.uid,
   });
 
   @override
@@ -211,7 +214,25 @@ class ViewOrganization extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditOrganization(
+                                acronym: acronym,
+                                banner: banner,
+                                status: status,
+                                category: category,
+                                email: email,
+                                facebook: facebook,
+                                logo: logo,
+                                mobile: mobile,
+                                name: name,
+                                uid: uid,
+                              ),
+                            ),
+                          );
+                        },
                         child: Text(
                           'Delete Organization',
                           style: TextStyle(
