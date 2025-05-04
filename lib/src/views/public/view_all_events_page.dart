@@ -12,15 +12,15 @@ class ViewAllEventsPage extends StatefulWidget {
 }
 
 class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
-  late Future<List<EventsCard>> _futureCards;
+  late Future<List<EventCard>> _futureEventsCards;
 
   @override
   void initState() {
     super.initState();
-    _futureCards = fetchAllDashboardCards();
+    _futureEventsCards = fetchAllEventCards();
   }
 
-  Future<List<EventsCard>> fetchAllDashboardCards() async {
+  Future<List<EventsCard>> fetchAllEventCards() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .get();
@@ -36,7 +36,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
           final newVisibility = !(data['isVisible'] ?? true);
           await eventRef.update({'isVisible': newVisibility});
           setState(() {
-            _futureCards = fetchAllDashboardCards();
+            _futureEventsCards = fetchAllEventCards();
           });
         },
       );
@@ -53,8 +53,8 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: FutureBuilder<List<EventsCard>>(
-          future: _futureCards,
+        child: FutureBuilder<List<EventCard>>(
+          future: _futureEventsCards,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());

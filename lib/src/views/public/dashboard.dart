@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/services/auth.dart';
 import 'package:univents/src/views/customwidgets/categories.dart';
-import 'package:univents/src/views/customwidgets/events_card.dart';
+import 'package:univents/src/views/customwidgets/events_cards.dart';
+import 'package:univents/src/views/customwidgets/organizations_cards.dart';
 import 'package:univents/src/views/public/sign_In_Page.dart';
 import 'package:univents/src/views/public/view_all_events_page.dart';
+import 'package:univents/src/views/public/view_all_organizations_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -14,16 +16,18 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  late Future<List<EventsCard>> _futureCards;
+  late Future<List<EventCard>> _futureEventsCards;
+  late Future<List<OrganizationCard>> _futureOrganizationCards;
   bool isDashboardExpanded = true;
 
   @override
   void initState() {
     super.initState();
-    _futureCards = fetchDashboardCards();
+    _futureEventsCards = fetchEventCards();
+    _futureOrganizationCards = fetchOrganizationCards();
   }
 
-  Future<List<EventsCard>> fetchDashboardCards() async {
+  Future<List<EventsCard>> fetchEventCards() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .where('isVisible', isEqualTo: true)
@@ -37,12 +41,17 @@ class _DashboardState extends State<Dashboard> {
         eventRef,
         onVisibilityChanged: () {
           setState(() {
-            _futureCards = fetchDashboardCards();
+            _futureEventsCards = fetchEventCards();
           });
         },
       );
     }).toList();
   }
+
+  Future<List<OrganizationCard>> fetchOrganizationCards() async {
+  final organizationSnapshot = await FirebaseFirestore.instance.collection('organizations').get();
+  return organizationSnapshot.docs.map((doc) => OrganizationCard.fromMap(doc.data())).toList();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -271,20 +280,41 @@ class _DashboardState extends State<Dashboard> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Upcoming Events",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF182C8C),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Upcoming Events",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF182C8C),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ViewAllEventsPage(events: [],)),
+                              );
+                            },
+                            child: const Text(
+                              "View All",
+                              style: TextStyle(
+                                color: Color(0xFF182C8C),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     TextButton(
@@ -302,8 +332,8 @@ class _DashboardState extends State<Dashboard> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 FutureBuilder<List<EventsCard>>(
@@ -321,44 +351,97 @@ class _DashboardState extends State<Dashboard> {
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        SizedBox(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            height: 280,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: limitedEvents.map((card) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 15),
-                                    child: card,
-                                  );
-                                }).toList(),
+                          const Text(
+                            "Organizations",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF182C8C),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ViewAllOrganizationsPage(organizations: [],)),
+                              );
+                            },
+                            child: const Text(
+                              "View All",
+                              style: TextStyle(
+                                color: Color(0xFF182C8C),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final user = await signOut();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Signed out successfully!")),
-                              );
-                              if (!mounted) return; // Add this to prevent errors after async
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignInPage()),
-                              );
-                            },
-                            child: const Text('Sign Out'),
-                          ),
                         ],
-                      );
-                    }
-                  },
+                      ),
+                      const SizedBox(height: 10),
+                      FutureBuilder<List<OrganizationCard>>(
+                        future: _futureOrganizationCards,
+                        builder: (context, organizationSnapshot) {
+                          if (organizationSnapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (organizationSnapshot.hasError) {
+                            return Center(child: Text('Error: ${organizationSnapshot.error}'));
+                          } else if (!organizationSnapshot.hasData || organizationSnapshot.data!.isEmpty) {
+                            return const Center(child: Text('No organizations found.'));
+                          } else {
+                            final oprganizations = organizationSnapshot.data!;
+                            final limitedOrganizations = oprganizations.take(10).toList(); // Limit to 10 oprganizations
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 280,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: limitedOrganizations.map((card) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(right: 15),
+                                          child: card,
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    final user = await signOut();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Signed out successfully!")),
+                                    );
+                                    if (!mounted) return; // Add this to prevent errors after async
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => SignInPage()),
+                                    );
+                                  },
+                                  child: const Text('Sign Out'),
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
+            ],
+          ) 
         ),
       ),
     );
