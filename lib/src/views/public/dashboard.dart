@@ -4,9 +4,12 @@ import 'package:univents/src/services/auth.dart';
 import 'package:univents/src/views/customwidgets/categories.dart';
 import 'package:univents/src/views/customwidgets/events_card.dart';
 import 'package:univents/src/views/customwidgets/organizations_cards.dart';
+import 'package:univents/src/views/public/create_event_page.dart';
+import 'package:univents/src/views/public/create_organization.dart';
 import 'package:univents/src/views/public/sign_In_Page.dart';
 import 'package:univents/src/views/public/view_all_events_page.dart';
 import 'package:univents/src/views/public/view_all_organizations_page.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -439,6 +442,44 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+      floatingActionButton: SpeedDial(
+         icon: Icons.add,
+         foregroundColor: Colors.white,
+         backgroundColor: Color(0xFF182C8C),
+         children: [
+           SpeedDialChild(
+             child: const Icon(Icons.view_timeline_outlined,color: Colors.white),
+             label: 'Create Organization',
+             backgroundColor: Color(0xFF182C8C),
+             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CreateOrganization()),
+              ).then((_) {
+                setState(() {
+                  _futureOrganizationCards = fetchOrganizationCards();
+                });
+              });
+             },
+           ),
+           SpeedDialChild(
+             child: const Icon(Icons.access_time_rounded,color: Colors.white),
+             label: 'Create Event',
+             backgroundColor: Color(0xFF182C8C),
+             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CreateEventPage()),
+              ).then((_) {
+                setState(() {
+                  _futureEventCards = fetchEventCards(); // Refresh after returning
+                });
+              });
+             },
+           ),
+         ]
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
