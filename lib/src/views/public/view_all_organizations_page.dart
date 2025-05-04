@@ -13,17 +13,35 @@ class ViewAllOrganizationsPage extends StatefulWidget {
 }
 
 class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
-  late Future<List<OrganizationCard>> _futureOrganizationCardsCards;
+  late Future<List<OrganizationCard>> _futureOrganizationCards;
 
   @override
   void initState() {
     super.initState();
-    _futureOrganizationCardsCards = fetchAllOrganizationCards();
+    _futureOrganizationCards = fetchAllOrganizationCards();
   }
 
   Future<List<OrganizationCard>> fetchAllOrganizationCards() async {
-    final snapshot = await FirebaseFirestore.instance.collection('organizations').get();
-    return snapshot.docs.map((doc) => OrganizationCard.fromMap(doc.data())).toList();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('organizations')
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      final orgRef = doc.reference;
+
+      return OrganizationCard.fromMap(
+        data,
+        orgRef,
+        onVisibilityChanged: () async {
+          final newVisibility = !(data['isVisible'] ?? true);
+          await orgRef.update({'isVisible': newVisibility});
+          setState(() {
+            _futureOrganizationCards = fetchAllOrganizationCards();
+          });
+        },
+      );
+    }).toList();
   }
 
   @override
@@ -44,7 +62,7 @@ class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: FutureBuilder<List<OrganizationCard>>(
-          future: _futureOrganizationCardsCards,
+          future: _futureOrganizationCards,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -75,7 +93,7 @@ class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
             MaterialPageRoute(builder: (context) => const CreateOrganization()),
           ).then((_) {
             setState(() {
-              _futureOrganizationCardsCards = fetchAllOrganizationCards();
+              _futureOrganizationCards = fetchAllOrganizationCards();
             });
           });
         },

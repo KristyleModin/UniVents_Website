@@ -52,11 +52,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<List<OrganizationCard>> fetchOrganizationCards() async {
-    final organizationSnapshot =
-        await FirebaseFirestore.instance.collection('organizations').get();
-    return organizationSnapshot.docs
-        .map((doc) => OrganizationCard.fromMap(doc.data()))
-        .toList();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('organizations')
+        .where('isVisible', isEqualTo: true)
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final Map<String, dynamic> data = doc.data();
+      final eventRef = doc.reference;
+      return OrganizationCard.fromMap(
+        data,
+        eventRef,
+        onVisibilityChanged: () {
+          setState(() {
+            _futureOrganizationCards = fetchOrganizationCards();
+          });
+        },
+      );
+    }).toList();
   }
 
 @override
