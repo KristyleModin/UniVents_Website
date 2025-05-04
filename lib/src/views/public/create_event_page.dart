@@ -176,6 +176,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       appBar: AppBar(
         title: const Text("Create New Event"),
         backgroundColor: const Color(0xFF182C8C),
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
