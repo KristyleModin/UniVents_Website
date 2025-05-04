@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/views/customwidgets/organizations_cards.dart';
 import 'package:univents/src/views/public/create_organization.dart';
+import 'package:univents/src/views/customwidgets/manage_button.dart';
+
 
 class ViewAllOrganizationsPage extends StatefulWidget {
   const ViewAllOrganizationsPage({super.key, required List<OrganizationCard> organizations});
@@ -59,25 +61,6 @@ class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
                     Wrap(
                       children: organizations,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CreateOrganization()),
-                        );
-                      },
-                      child: Text(
-                        'Create Organization',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               );
@@ -85,6 +68,19 @@ class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
           },
         ),
       ),
+      floatingActionButton: ManageButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateOrganization()),
+          ).then((_) {
+            setState(() {
+              _futureOrganizationCardsCards = fetchAllOrganizationCards();
+            });
+          });
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
