@@ -56,7 +56,7 @@ class _DashboardState extends State<Dashboard> {
         .toList();
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -118,18 +118,15 @@ class _DashboardState extends State<Dashboard> {
                           child: Row(
                             children: [
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Icon(Icons.search,
-                                    color: Colors.white.withOpacity(0.8)),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Icon(Icons.search, color: Colors.white.withOpacity(0.8)),
                               ),
                               Expanded(
                                 child: TextField(
                                   style: const TextStyle(color: Colors.white),
                                   decoration: InputDecoration(
                                     hintText: "Search...",
-                                    hintStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.5)),
+                                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                                     border: InputBorder.none,
                                   ),
                                 ),
@@ -147,12 +144,10 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           child: TextButton.icon(
                             onPressed: () {},
-                            icon: const Icon(Icons.filter_list,
-                                size: 20, color: Colors.white),
+                            icon: const Icon(Icons.filter_list, size: 20, color: Colors.white),
                             label: const Text(
                               "Filters",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 13),
+                              style: TextStyle(color: Colors.white, fontSize: 13),
                             ),
                           ),
                         ),
@@ -172,21 +167,21 @@ class _DashboardState extends State<Dashboard> {
                           color: const Color(0xFFEB5757),
                           onPressed: () {},
                         ),
-                        const SizedBox(width: 7),
+                        SizedBox(width: 7),
                         CategoryButton(
                           icon: Icons.music_note,
                           label: 'Music',
                           color: const Color(0xFFF2994A),
                           onPressed: () {},
                         ),
-                        const SizedBox(width: 7),
+                        SizedBox(width: 7),
                         CategoryButton(
                           icon: Icons.sports_esports,
                           label: 'ESports',
                           color: const Color(0xFF27AE60),
                           onPressed: () {},
                         ),
-                        const SizedBox(width: 7),
+                        SizedBox(width: 7),
                         CategoryButton(
                           icon: Icons.brush,
                           label: 'Art',
@@ -258,8 +253,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               ExpansionTile(
                 initiallyExpanded: true,
-                leading: const Icon(Icons.grid_view_rounded,
-                    size: 24, color: Colors.black),
+                leading: Icon(Icons.grid_view_rounded, size: 24, color: Colors.black),
                 title: const Text(
                   'Dashboard',
                   style: TextStyle(
@@ -269,20 +263,15 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 children: [
-                  const ListTile(
+                  ListTile(
                     contentPadding: EdgeInsets.only(left: 60),
                     title: Text('Organization'),
                   ),
                   ListTile(
-                    contentPadding: const EdgeInsets.only(left: 60),
-                    title: const Text('Manage Events'),
+                    contentPadding: EdgeInsets.only(left: 60),
+                    title: Text('Manage Events'),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ViewAllEventsPage(),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewAllEventsPage()));
                     },
                   ),
                 ],
@@ -294,11 +283,12 @@ class _DashboardState extends State<Dashboard> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
@@ -313,9 +303,7 @@ class _DashboardState extends State<Dashboard> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ViewAllEventsPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) => const ViewAllEventsPage()),
                         );
                       },
                       child: const Text(
@@ -329,93 +317,125 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              FutureBuilder<List<EventCard>>(
-                future: _futureEventCards,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No events found.'));
-                  } else {
-                    final events = snapshot.data!;
-                    final limitedEvents = events.take(10).toList();
-                    return Column(children: limitedEvents);
-                  }
-                },
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Organizations",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF182C8C),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ViewAllOrganizationsPage(
-                              organizations: [],
+                const SizedBox(height: 10),
+                FutureBuilder<List<EventCard>>(
+                  future: _futureEventCards,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No events found.'));
+                    } else {
+                      final events = snapshot.data!;
+                      final limitedEvents = events.take(10).toList(); // Limit to 10 events
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 280,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: limitedEvents.map((card) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 15),
+                                    child: card,
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "View All",
-                        style: TextStyle(
-                          color: Color(0xFF182C8C),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                          const SizedBox(height: 20),
+                        ],
+                      );
+                    }
+                  },
                 ),
-              ),
-              const SizedBox(height: 10),
-              FutureBuilder<List<OrganizationCard>>(
-                future: _futureOrganizationCards,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No organizations found.'));
-                  } else {
-                    final organizations = snapshot.data!;
-                    return Column(children: organizations);
-                  }
-                },
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  final user = await signOut();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Signed out successfully!")),
-                  );
-                  if (!mounted) return; // Add this to prevent errors after async
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignInPage()),
-                  );
-                },
-                child: const Text('Sign Out'),
-              ),
-            ],
+                const SizedBox(height: 10),
+                FutureBuilder<List<OrganizationCard>>(
+                  future: _futureOrganizationCards,
+                  builder: (context, organizationSnapshot) {
+                    if (organizationSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (organizationSnapshot.hasError) {
+                      return Center(child: Text('Error: ${organizationSnapshot.error}'));
+                    } else if (!organizationSnapshot.hasData || organizationSnapshot.data!.isEmpty) {
+                      return const Center(child: Text('No organizations found.'));
+                    } else {
+                      final oprganizations = organizationSnapshot.data!;
+                      final limitedOrganizations = oprganizations.take(10).toList(); // Limit to 10 oprganizations
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Organizations",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF182C8C),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const ViewAllOrganizationsPage(organizations: [],)),
+                                  );
+                                },
+                                child: const Text(
+                                  "View All",
+                                  style: TextStyle(
+                                    color: Color(0xFF182C8C),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 280,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: limitedOrganizations.map((card) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 15),
+                                    child: card,
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              final user = await signOut();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Signed out successfully!")),
+                              );
+                              if (!mounted) return; // Add this to prevent errors after async
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignInPage()),
+                              );
+                            },
+                            child: const Text('Sign Out'),
+                          ),
+                        ],
+                            );
+                          }
+                        },
+                      ),
+              ],
+            ),
           ),
         ),
       ),
