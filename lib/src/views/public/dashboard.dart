@@ -400,6 +400,21 @@ class _DashboardState extends State<Dashboard> {
                   }
                 },
               ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final user = await signOut();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Signed out successfully!")),
+                  );
+                  if (!mounted) return; // Add this to prevent errors after async
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInPage()),
+                  );
+                },
+                child: const Text('Sign Out'),
+              ),
             ],
           ),
         ),
@@ -407,3 +422,5 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 }
+
+
