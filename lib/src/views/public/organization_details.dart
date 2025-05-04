@@ -130,9 +130,9 @@ class ViewOrganization extends StatelessWidget {
                               : screenWidth < 900
                                   ? 150
                                   : 200,
-                          height: screenHeight < 600
+                          height: screenWidth < 600
                               ? 100
-                              : screenHeight < 900
+                              : screenWidth < 900
                                   ? 150
                                   : 200,
                           fit: BoxFit.cover,
