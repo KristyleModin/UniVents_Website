@@ -39,53 +39,51 @@ class _ViewAllOrganizationsPageState extends State<ViewAllOrganizationsPage> {
         ),
         backgroundColor: const Color(0xFF182C8C),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: FutureBuilder<List<OrganizationCard>>(
-              future: _futureOrganizationCardsCards,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No organizations found.'));
-                } else {
-                  final organizations = snapshot.data!;
-                  return SingleChildScrollView(
-                    child: Wrap(
-                      spacing: 15,
-                      runSpacing: 15,
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: FutureBuilder<List<OrganizationCard>>(
+          future: _futureOrganizationCardsCards,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No organizations found.'));
+            } else {
+              final organizations = snapshot.data!;
+              return SingleChildScrollView(
+                child: Column(
+                  spacing: 15,
+                  children: [
+                    Wrap(
                       children: organizations,
                     ),
-                  );
-                }
-              },
-            ),
-          ),
-          
-          ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CreateOrganization()),
-            );
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CreateOrganization()),
+                        );
+                      },
+                      child: Text(
+                        'Create Organization',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
           },
-          child: Text(
-            'Create Organization',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontStyle: FontStyle.normal,
-            ),
-          ),
         ),
-        ],
       ),
     );
   }
