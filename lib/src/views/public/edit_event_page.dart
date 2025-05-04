@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditEventPage extends StatefulWidget {
@@ -31,6 +36,10 @@ class _EditEventPageState extends State<EditEventPage> {
   late DateTime _startDate;
   late DateTime _endDate;
 
+  File? _bannerImageFile;
+  Uint8List? _webImageBytes;
+  String? _currentBannerUrl;
+
   @override
   void initState() {
     super.initState();
@@ -41,20 +50,20 @@ class _EditEventPageState extends State<EditEventPage> {
     _statusController = TextEditingController(text: widget.initialData['status'] ?? '');
     _typeController = TextEditingController(text: widget.initialData['type'] ?? '');
 
-    final rawStart = widget.initialData['datetimestart'];
-    final rawEnd = widget.initialData['datetimeend'];
+    final rawStart = widget.initialData['dateTimeStart'] ?? widget.initialData['datetimestart'];
+    final rawEnd = widget.initialData['dateTimeEnd'] ?? widget.initialData['datetimeend'];
 
     _startDate = (rawStart is Timestamp)
         ? rawStart.toDate()
         : (rawStart is DateTime)
             ? rawStart
-            : DateTime.now(); // fallback if null
+            : DateTime.now();
 
     _endDate = (rawEnd is Timestamp)
         ? rawEnd.toDate()
         : (rawEnd is DateTime)
             ? rawEnd
-            : DateTime.now(); // fallback if null
+            : DateTime.now();
 
     _startDateController = TextEditingController(
       text: DateFormat('MMMM d, y h:mm a').format(_startDate),
@@ -62,22 +71,85 @@ class _EditEventPageState extends State<EditEventPage> {
     _endDateController = TextEditingController(
       text: DateFormat('MMMM d, y h:mm a').format(_endDate),
     );
+
+    _currentBannerUrl = widget.initialData['banner'] ?? '';
   }
 
+  Future<void> _pickBannerImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImageBytes = bytes;
+          _bannerImageFile = null;
+        });
+      } else {
+        setState(() {
+          _bannerImageFile = File(pickedFile.path);
+          _webImageBytes = null;
+        });
+      }
+    }
+  }
 
   Future<void> updateEvent() async {
     if (_formKey.currentState!.validate()) {
+      String bannerUrl = _currentBannerUrl ?? '';
+
+      if (_bannerImageFile != null || _webImageBytes != null) {
+        try {
+          String fileName = '${widget.eventRef.id}_${DateTime.now().millisecondsSinceEpoch}';
+          String ext = 'jpg'; // Default extension
+          String contentType = 'image/jpeg';
+
+          if (_bannerImageFile != null) {
+            ext = _bannerImageFile!.path.split('.').last.toLowerCase();
+          }
+
+          if (ext == 'png') contentType = 'image/png';
+          else if (ext == 'webp') contentType = 'image/webp';
+          else if (ext == 'heic') contentType = 'image/heic';
+
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('Event - Banner/$fileName.$ext');
+
+          if (kIsWeb && _webImageBytes != null) {
+            await storageRef.putData(_webImageBytes!, SettableMetadata(contentType: contentType));
+          } else if (_bannerImageFile != null) {
+            await storageRef.putFile(_bannerImageFile!, SettableMetadata(contentType: contentType));
+          }
+
+          bannerUrl = await storageRef.getDownloadURL();
+        } catch (e) {
+          print('Banner upload failed: $e');
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to upload banner: $e')),
+            );
+          }
+          return;
+        }
+      }
+
       await widget.eventRef.update({
         'title': _titleController.text.trim(),
         'location': _locationController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'tags': _tagsController.text.trim(), // Stored as string
+        'tags': _tagsController.text.trim(),
         'status': _statusController.text.trim(),
         'type': _typeController.text.trim(),
-        'datetimestart': _startDate, // Field name updated
-        'datetimeend': _endDate,     // Field name updated
+        'datetimestart': _startDate,
+        'datetimeend': _endDate,
+        'banner': bannerUrl,
       });
-      Navigator.pop(context, true); // Return success
+
+      if (context.mounted) {
+        Navigator.pop(context, true); // return success
+      }
     }
   }
 
@@ -127,6 +199,22 @@ class _EditEventPageState extends State<EditEventPage> {
           key: _formKey,
           child: ListView(
             children: [
+              const Text("Banner Image", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              if (kIsWeb && _webImageBytes != null)
+                Image.memory(_webImageBytes!, height: 200, fit: BoxFit.cover)
+              else if (!kIsWeb && _bannerImageFile != null)
+                Image.file(_bannerImageFile!, height: 200, fit: BoxFit.cover)
+              else if (_currentBannerUrl != null && _currentBannerUrl!.isNotEmpty)
+                Image.network(_currentBannerUrl!, height: 200, fit: BoxFit.cover)
+              else
+                const Text("No banner selected"),
+              TextButton.icon(
+                onPressed: _pickBannerImage,
+                icon: const Icon(Icons.image),
+                label: const Text("Change Banner"),
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: "Title"),
