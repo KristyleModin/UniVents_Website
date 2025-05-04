@@ -13,7 +13,6 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   bool obscureText = true;
   bool _isSwitchOn = false;
-  bool _isVisible = true;
 
   final TextEditingController _emailFieldController = TextEditingController();
   final TextEditingController _passwordFieldController =
