@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:univents/src/views/public/event_details.dart';
 
-class EventsCard extends StatefulWidget {
+class EventCard extends StatefulWidget {
   final String title;
   final String banner;
   final DateTime dateTimeStart;
@@ -18,7 +18,7 @@ class EventsCard extends StatefulWidget {
   final VoidCallback? onVisibilityChanged;
   final bool isVisible;
 
-  const EventsCard({
+  const EventCard({
     super.key,
     required this.title,
     required this.banner,
@@ -35,7 +35,7 @@ class EventsCard extends StatefulWidget {
     required this.isVisible,
   });
 
-  factory EventsCard.fromMap(
+  factory EventCard.fromMap(
     Map<String, dynamic> map,
     DocumentReference eventRef, {
     VoidCallback? onVisibilityChanged,
@@ -43,7 +43,7 @@ class EventsCard extends StatefulWidget {
     final Timestamp startTimestamp = map['datetimestart'];
     final Timestamp endTimestamp = map['datetimeend'];
 
-    return EventsCard(
+    return EventCard(
       title: map['title'] ?? '',
       banner: map['banner'] ?? '',
       dateTimeStart: startTimestamp.toDate(),
@@ -61,10 +61,10 @@ class EventsCard extends StatefulWidget {
   }
 
   @override
-  State<EventsCard> createState() => _EventsCardState();
+  State<EventCard> createState() => _EventCardState();
 }
 
-class _EventsCardState extends State<EventsCard> {
+class _EventCardState extends State<EventCard> {
   late bool _isVisible;
   String? _orgName;
 

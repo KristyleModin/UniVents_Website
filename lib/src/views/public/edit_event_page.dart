@@ -109,8 +109,9 @@ class _EditEventPageState extends State<EditEventPage> {
             ext = _bannerImageFile!.path.split('.').last.toLowerCase();
           }
 
-          if (ext == 'png') contentType = 'image/png';
-          else if (ext == 'webp') contentType = 'image/webp';
+          if (ext == 'png') {
+            contentType = 'image/png';
+          } else if (ext == 'webp') contentType = 'image/webp';
           else if (ext == 'heic') contentType = 'image/heic';
 
           final storageRef = FirebaseStorage.instance

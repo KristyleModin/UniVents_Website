@@ -20,7 +20,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
     _futureEventsCards = fetchAllEventCards();
   }
 
-  Future<List<EventsCard>> fetchAllEventCards() async {
+  Future<List<EventCard>> fetchAllEventCards() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .get();
@@ -29,7 +29,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
       final data = doc.data();
       final eventRef = doc.reference;
 
-      return EventsCard.fromMap(
+      return EventCard.fromMap(
         data,
         eventRef,
         onVisibilityChanged: () async {
@@ -83,7 +83,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
             MaterialPageRoute(builder: (context) => const CreateEventPage()),
           ).then((_) {
             setState(() {
-              _futureCards = fetchAllDashboardCards(); // Refresh after returning
+              _futureEventsCards = fetchAllEventCards(); // Refresh after returning
             });
           });
         },
