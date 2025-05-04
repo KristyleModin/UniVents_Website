@@ -83,8 +83,7 @@ class _ViewEventsState extends State<ViewEvents> {
     if (accountSnapshot.exists) {
       final accountData = accountSnapshot.data() as Map<String, dynamic>;
       attendeeList.add({
-        'firstname': accountData['firstname'] ?? '',
-        'lastname': accountData['lastname'] ?? '',
+        'name': accountData['fullname'] ?? 'Unknown',
         'email': accountData['email'] ?? 'Unknown',
         'timestamp': data['datetimestamp'] ?? '',
         'status': data['status'] ?? '',
@@ -299,7 +298,7 @@ class _ViewEventsState extends State<ViewEvents> {
                     ],
                     rows: attendees.map((attendee) {
                       return DataRow(cells: [
-                        DataCell(Text('${attendee['firstname']} ${attendee['lastname']}')),
+                        DataCell(Text(attendee['name'])),
                         DataCell(Text(attendee['email'])),
                         DataCell(Text(
                           attendee['timestamp'] is Timestamp
