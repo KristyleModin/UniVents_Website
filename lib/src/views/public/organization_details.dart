@@ -57,6 +57,9 @@ class ViewOrganization extends StatelessWidget {
               onPressed: () async {
                 await deleteOrganization(uid);
                 Navigator.of(context).pop();  // Close the dialog
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Organization deleted successfully!')),
+                );
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => Dashboard()),
@@ -101,6 +104,38 @@ class ViewOrganization extends StatelessWidget {
             );
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            tooltip: 'Edit Organization',
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditOrganization(
+                    acronym: acronym,
+                    banner: banner,
+                    status: status,
+                    category: category,
+                    email: email,
+                    facebook: facebook,
+                    logo: logo,
+                    mobile: mobile,
+                    name: name,
+                    uid: uid,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.white),
+            tooltip: 'Delete Organization',
+            onPressed: () async {
+              _showDeleteConfirmation(context, uid);  // Show confirmation dialog
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -231,64 +266,6 @@ class ViewOrganization extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF182C8C),
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditOrganization(
-                                acronym: acronym,
-                                banner: banner,
-                                status: status,
-                                category: category,
-                                email: email,
-                                facebook: facebook,
-                                logo: logo,
-                                mobile: mobile,
-                                name: name,
-                                uid: uid,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'Edit Organization',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 30),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: () {
-                          _showDeleteConfirmation(context, uid);  // Show confirmation dialog
-                        },
-                        child: Text(
-                          'Delete Organization',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
