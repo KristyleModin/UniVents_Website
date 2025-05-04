@@ -57,7 +57,17 @@ class _CreateOrganizationState extends State<CreateOrganization> {
 
   Future<void> _createOrganization() async {
     if (_formKey.currentState!.validate()) {
-      final confirm = await showDialog<bool>(
+      if (_bannerBytes == null || _logoBytes == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please upload both a banner and a logo.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Confirm Creation'),
@@ -71,7 +81,7 @@ class _CreateOrganizationState extends State<CreateOrganization> {
 
       if (confirm != true) return;
 
-      final String newId = const Uuid().v4();
+      final newId = FirebaseFirestore.instance.collection('organizations').doc();
       String bannerUrl = '';
       String logoUrl = '';
 
@@ -82,8 +92,8 @@ class _CreateOrganizationState extends State<CreateOrganization> {
         logoUrl = await _uploadImage(_logoBytes!, 'Organization - Logo/$newId.jpg');
       }
 
-      final data = {
-        'uid': newId,
+      await newId.set({
+        'uid': newId.id,
         'name': _nameController.text.trim(),
         'acronym': _acronymController.text.trim(),
         'category': _categoryController.text.trim(),
@@ -94,9 +104,8 @@ class _CreateOrganizationState extends State<CreateOrganization> {
         'banner': bannerUrl,
         'logo': logoUrl,
         'createdAt': FieldValue.serverTimestamp(),
-      };
+      });
 
-      await FirebaseFirestore.instance.collection('organizations').doc(newId).set(data);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Organization created successfully!")),
@@ -106,7 +115,7 @@ class _CreateOrganizationState extends State<CreateOrganization> {
         context,
         MaterialPageRoute(
           builder: (context) => ViewOrganization(
-            uid: newId,
+            uid: newId.id,
             name: _nameController.text.trim(),
             acronym: _acronymController.text.trim(),
             category: _categoryController.text.trim(),
