@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:univents/src/services/auth.dart'; // your auth file
+import 'package:univents/src/views/public/Sign_In_Page.dart';
 import 'package:univents/src/views/public/dashboard.dart';
 // import 'package:univents/src/views/public/sign_In_Page.dart';
 
@@ -48,30 +49,30 @@ class _MyAppState extends State<MyApp> {
     getUserInfo();
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: "Flutter Web",
-//       theme: ThemeData(brightness: Brightness.light),
-//       debugShowCheckedModeBanner: false,
-//       home: loading 
-//           ? Scaffold(
-//               body: Center(child: CircularProgressIndicator()),
-//             )
-//           : isLoggedIn 
-//             ? Dashboard() 
-//             : SignInPage(),
-//     );
-//   }
-// }
-
-@override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Flutter Web",
       theme: ThemeData(brightness: Brightness.light),
       debugShowCheckedModeBanner: false,
-      home: Dashboard(), // Directly go to Dashboard
+      home: loading   
+          ? Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            )
+          : isLoggedIn 
+            ? Dashboard() 
+            : SignInPage(),
     );
   }
 }
+
+// @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: "Flutter Web",
+//       theme: ThemeData(brightness: Brightness.light),
+//       debugShowCheckedModeBanner: false,
+//       home: Dashboard(), // Directly go to Dashboard
+//     );
+//   }
+// }

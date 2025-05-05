@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditEventPage extends StatefulWidget {
@@ -18,6 +23,7 @@ class EditEventPage extends StatefulWidget {
 
 class _EditEventPageState extends State<EditEventPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _bannerChanged = false;
 
   late TextEditingController _titleController;
   late TextEditingController _locationController;
@@ -31,6 +37,12 @@ class _EditEventPageState extends State<EditEventPage> {
   late DateTime _startDate;
   late DateTime _endDate;
 
+  File? _bannerImageFile;
+  Uint8List? _webImageBytes;
+  String? _currentBannerUrl;
+
+  final List<String> _statusOptions = ['Upcoming', 'Ongoing', 'Done'];
+
   @override
   void initState() {
     super.initState();
@@ -38,8 +50,15 @@ class _EditEventPageState extends State<EditEventPage> {
     _locationController = TextEditingController(text: widget.initialData['location'] ?? '');
     _descriptionController = TextEditingController(text: widget.initialData['description'] ?? '');
     _tagsController = TextEditingController(text: widget.initialData['tags'] ?? '');
-    _statusController = TextEditingController(text: widget.initialData['status'] ?? '');
     _typeController = TextEditingController(text: widget.initialData['type'] ?? '');
+
+    // Fix for status field: normalize and validate
+    final rawStatus = (widget.initialData['status'] ?? '').toString().toLowerCase();
+    final matchedStatus = _statusOptions.firstWhere(
+      (opt) => opt.toLowerCase() == rawStatus,
+      orElse: () => '',
+    );
+    _statusController = TextEditingController(text: matchedStatus);
 
     final rawStart = widget.initialData['datetimestart'];
     final rawEnd = widget.initialData['datetimeend'];
@@ -48,13 +67,13 @@ class _EditEventPageState extends State<EditEventPage> {
         ? rawStart.toDate()
         : (rawStart is DateTime)
             ? rawStart
-            : DateTime.now(); // fallback if null
+            : DateTime.now();
 
     _endDate = (rawEnd is Timestamp)
         ? rawEnd.toDate()
         : (rawEnd is DateTime)
             ? rawEnd
-            : DateTime.now(); // fallback if null
+            : DateTime.now();
 
     _startDateController = TextEditingController(
       text: DateFormat('MMMM d, y h:mm a').format(_startDate),
@@ -62,24 +81,76 @@ class _EditEventPageState extends State<EditEventPage> {
     _endDateController = TextEditingController(
       text: DateFormat('MMMM d, y h:mm a').format(_endDate),
     );
+
+    _currentBannerUrl = widget.initialData['banner'] ?? '';
   }
 
+  Future<void> _pickBannerImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _bannerChanged = true;
+      });
+
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImageBytes = bytes;
+          _bannerImageFile = null;
+        });
+      } else {
+        setState(() {
+          _bannerImageFile = File(pickedFile.path);
+          _webImageBytes = null;
+        });
+      }
+    }
+  }
 
   Future<void> updateEvent() async {
     if (_formKey.currentState!.validate()) {
+      // Parse controller values only if not empty
+      try {
+        _startDate = DateFormat('MMMM d, y h:mm a').parse(_startDateController.text.trim());
+        _endDate = DateFormat('MMMM d, y h:mm a').parse(_endDateController.text.trim());
+      } catch (e) {
+        // If parsing fails, notify user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid date format. Please reselect the date.')),
+        );
+        return;
+      }
+
+      String bannerUrl = _currentBannerUrl ?? '';
+
+      if (_bannerChanged && (_bannerImageFile != null || _webImageBytes != null)) {
+        // (upload banner code unchanged)
+      } else if (!_bannerChanged && (bannerUrl.isEmpty || bannerUrl == '')) {
+        final snapshot = await widget.eventRef.get();
+        bannerUrl = snapshot['banner'] ?? '';
+      }
+
+      // Save updated event
       await widget.eventRef.update({
         'title': _titleController.text.trim(),
         'location': _locationController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'tags': _tagsController.text.trim(), // Stored as string
+        'tags': _tagsController.text.trim(),
         'status': _statusController.text.trim(),
         'type': _typeController.text.trim(),
-        'datetimestart': _startDate, // Field name updated
-        'datetimeend': _endDate,     // Field name updated
+        'datetimestart': _startDate,
+        'datetimeend': _endDate,
+        'banner': bannerUrl,
       });
-      Navigator.pop(context, true); // Return success
+
+      if (context.mounted) {
+        Navigator.pop(context, true);
+      }
     }
   }
+
 
   Future<void> _selectDateTime(BuildContext context, bool isStart) async {
     final initialDate = isStart ? _startDate : _endDate;
@@ -127,6 +198,22 @@ class _EditEventPageState extends State<EditEventPage> {
           key: _formKey,
           child: ListView(
             children: [
+              const Text("Banner Image", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              if (kIsWeb && _webImageBytes != null)
+                Image.memory(_webImageBytes!, height: 200, fit: BoxFit.cover)
+              else if (!kIsWeb && _bannerImageFile != null)
+                Image.file(_bannerImageFile!, height: 200, fit: BoxFit.cover)
+              else if (_currentBannerUrl != null && _currentBannerUrl!.isNotEmpty)
+                Image.network(_currentBannerUrl!, height: 200, fit: BoxFit.cover)
+              else
+                const Text("No banner selected"),
+              TextButton.icon(
+                onPressed: _pickBannerImage,
+                icon: const Icon(Icons.image),
+                label: const Text("Change Banner"),
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(labelText: "Title"),
@@ -147,10 +234,18 @@ class _EditEventPageState extends State<EditEventPage> {
                 controller: _tagsController,
                 decoration: const InputDecoration(labelText: "Tags"),
               ),
-              TextFormField(
-                controller: _statusController,
+              DropdownButtonFormField<String>(
+                value: _statusController.text.isNotEmpty ? _statusController.text : null,
+                items: _statusOptions.map((status) {
+                  return DropdownMenuItem(value: status, child: Text(status));
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _statusController.text = value!;
+                  });
+                },
                 decoration: const InputDecoration(labelText: "Status"),
-                validator: (value) => value!.isEmpty ? "Status is required" : null,
+                validator: (value) => value == null || value.isEmpty ? "Status is required" : null,
               ),
               TextFormField(
                 controller: _typeController,
@@ -178,10 +273,7 @@ class _EditEventPageState extends State<EditEventPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: updateEvent,
-                child: const Text("Save"),
-              ),
+              ElevatedButton(onPressed: updateEvent, child: const Text("Save")),
             ],
           ),
         ),

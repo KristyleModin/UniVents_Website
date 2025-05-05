@@ -266,7 +266,10 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.only(left: 60),
-                    title: Text('Organization'),
+                    title: Text('Manage Organization'),
+                    // onTap: () { 
+                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewAllOrganizationsPage(organizations: organizations)))
+                    // },
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.only(left: 60),

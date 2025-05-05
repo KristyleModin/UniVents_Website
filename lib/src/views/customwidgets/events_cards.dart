@@ -119,7 +119,7 @@ class _EventsCardState extends State<EventsCard> {
       opacity: _isVisible ? 1.0 : 0.4,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        height: 320,
+        height: 300,
         width: 250,
         child: InkWell(
           onTap: () {

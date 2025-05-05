@@ -153,7 +153,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
           'datetimeend': _endDateTime,
           'banner': _bannerUrl ?? '',
           'isVisible': true,
-          'createdAt': FieldValue.serverTimestamp(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
