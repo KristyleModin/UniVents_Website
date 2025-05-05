@@ -3,7 +3,7 @@ import 'package:univents/src/views/public/dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:univents/src/views/public/edit_organization.dart';
 
-class ViewOrganization extends StatelessWidget {
+class ViewOrganization extends StatefulWidget {
   final String acronym;
   final String banner;
   final String status;
@@ -29,6 +29,11 @@ class ViewOrganization extends StatelessWidget {
     required this.uid,
   });
 
+  @override
+  State<ViewOrganization> createState() => _ViewOrganizationState();
+}
+
+class _ViewOrganizationState extends State<ViewOrganization> {
   // Function to delete organization
   Future<void> deleteOrganization(String uid) async {
     try {
@@ -113,16 +118,16 @@ class ViewOrganization extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => EditOrganization(
-                    acronym: acronym,
-                    banner: banner,
-                    status: status,
-                    category: category,
-                    email: email,
-                    facebook: facebook,
-                    logo: logo,
-                    mobile: mobile,
-                    name: name,
-                    uid: uid,
+                    acronym: widget.acronym,
+                    banner: widget.banner,
+                    status: widget.status,
+                    category: widget.category,
+                    email: widget.email,
+                    facebook: widget.facebook,
+                    logo: widget.logo,
+                    mobile: widget.mobile,
+                    name: widget.name,
+                    uid: widget.uid,
                   ),
                 ),
               );
@@ -132,7 +137,7 @@ class ViewOrganization extends StatelessWidget {
             icon: const Icon(Icons.delete, color: Colors.white),
             tooltip: 'Delete Organization',
             onPressed: () async {
-              _showDeleteConfirmation(context, uid);  // Show confirmation dialog
+              _showDeleteConfirmation(context, widget.uid);  // Show confirmation dialog
             },
           ),
         ],
@@ -141,10 +146,10 @@ class ViewOrganization extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (banner != '')
+            if (widget.banner != '')
               ClipRRect(
                 child: Image.network(
-                  banner,
+                  widget.banner,
                   width: double.infinity,
                   height: bannerHeight,
                   fit: BoxFit.cover,
@@ -159,7 +164,7 @@ class ViewOrganization extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          logo,
+                          widget.logo,
                           width: screenWidth < 600
                               ? 100
                               : screenWidth < 900
@@ -185,7 +190,7 @@ class ViewOrganization extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
-                              name,
+                              widget.name,
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -194,14 +199,14 @@ class ViewOrganization extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  acronym,
+                                  widget.acronym,
                                   style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                                 Text(" (", style: TextStyle(fontSize: 24)),
-                                Text(category, style: TextStyle(fontSize: 24)),
+                                Text(widget.category, style: TextStyle(fontSize: 24)),
                                 Text(")", style: TextStyle(fontSize: 24)),
                               ],
                             ),
@@ -212,7 +217,7 @@ class ViewOrganization extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                status,
+                                widget.status,
                                 style: TextStyle(fontSize: 20),
                               ),
                             ),
@@ -234,7 +239,7 @@ class ViewOrganization extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Text(email, style: TextStyle(fontSize: 20)),
+                          Text(widget.email, style: TextStyle(fontSize: 20)),
                         ],
                       ),
                       Row(
@@ -247,7 +252,7 @@ class ViewOrganization extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Text(facebook, style: TextStyle(fontSize: 20)),
+                          Text(widget.facebook, style: TextStyle(fontSize: 20)),
                         ],
                       ),
                       Row(
@@ -260,7 +265,7 @@ class ViewOrganization extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Text(mobile, style: TextStyle(fontSize: 20)),
+                          Text(widget.mobile, style: TextStyle(fontSize: 20)),
                         ],
                       ),
                     ],
@@ -274,4 +279,8 @@ class ViewOrganization extends StatelessWidget {
       ),
     );
   }
-}
+
+
+} 
+
+  
