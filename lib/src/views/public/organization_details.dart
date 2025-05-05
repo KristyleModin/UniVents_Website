@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:univents/src/views/public/dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:univents/src/views/public/edit_organization.dart';
@@ -78,6 +79,33 @@ class _ViewOrganizationState extends State<ViewOrganization> {
       },
     );
   }
+
+Future<List<Map<String, dynamic>>> fetchEvents() async {
+  if (widget.uid.isEmpty) {
+    print(widget.name);
+    print("UID is empty, skipping event fetch.");
+    return [];
+  }
+
+  final eventsSnapshot = await FirebaseFirestore.instance
+      .collection('events')
+      .where('orguid', isEqualTo: FirebaseFirestore.instance.collection('organizations').doc(widget.uid))
+      .get();
+
+  List<Map<String, dynamic>> eventList = [];
+
+  for (var doc in eventsSnapshot.docs) {
+    final data = doc.data();
+    eventList.add({
+      'title': data['title'] ?? '',
+      'datetimestart': data['datetimestart'] ?? '',
+      'datetimeend': data['datetimeend'] ?? '',
+      'status': data['status'] ?? '',
+    });
+  }
+
+  return eventList;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -271,6 +299,53 @@ class _ViewOrganizationState extends State<ViewOrganization> {
                     ],
                   ),
                   SizedBox(height: 24),
+                  const Text(
+                    "Events",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: fetchEvents(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text('No events yet.');
+                      }
+
+                      final events = snapshot.data!;
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columnSpacing: 16,
+                          columns: const [
+                            DataColumn(label: Text('Title')),
+                            DataColumn(label: Text('Start Date & Time')),
+                            DataColumn(label: Text('End Date & Time')),
+                            DataColumn(label: Text('Status')),
+                          ],
+                          rows: events.map((event) {
+                            return DataRow(cells: [
+                              DataCell(Text(event['title'])),
+                              DataCell(Text(
+                                event['datetimestart'] is Timestamp
+                                    ? DateFormat.yMd().add_jm().format((event['datetimestart'] as Timestamp).toDate())
+                                    : event['datetimestart'].toString(),
+                              )),
+                              DataCell(Text(
+                                event['datetimeend'] is Timestamp
+                                    ? DateFormat.yMd().add_jm().format((event['datetimeend'] as Timestamp).toDate())
+                                    : event['datetimeend'].toString(),
+                              )),
+                              DataCell(Text(event['status'])),
+                            ]);
+                          }).toList(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
