@@ -193,7 +193,10 @@ class _EditEventPageState extends State<EditEventPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Event")),
+      appBar: AppBar(title: const Text("Edit Event", style: TextStyle(color: Colors.white),),
+      backgroundColor: const Color(0xFF182C8C),
+      iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

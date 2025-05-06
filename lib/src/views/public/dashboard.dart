@@ -281,7 +281,10 @@ class _DashboardState extends State<Dashboard> {
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.only(left: 60),
-                    title: Text('Organization'),
+                    title: Text('Manage Organizations'),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewAllOrganizationsPage(organizations: [],)));
+                    },
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.only(left: 60),
@@ -292,6 +295,21 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
+              ListTile(
+                    contentPadding: EdgeInsets.only(left: 60),
+                    title: Text('Sign Out'),
+                    onTap: () async {
+                      final user = await signOut();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Signed out successfully!")),
+                      );
+                      if (!mounted) return; // Add this to prevent errors after async
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignInPage()),
+                      );
+                    },
+                  ),
             ],
           ),
         ),
@@ -431,20 +449,6 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final user = await signOut();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Signed out successfully!")),
-                              );
-                              if (!mounted) return; // Add this to prevent errors after async
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignInPage()),
-                              );
-                            },
-                            child: const Text('Sign Out'),
-                          ),
                         ],
                             );
                           }
