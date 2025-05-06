@@ -1,10 +1,8 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
-
+import 'dart:html' as html; // Add this import for web-based file picking
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateEventPage extends StatefulWidget {
   const CreateEventPage({super.key});
@@ -28,7 +26,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   List<String> _organizations = [];
   String? _selectedOrganization;
 
-  Uint8List? _bannerImageBytes;
+  Uint8List? _bannerBytes;
   String? _bannerUrl;
 
   @override
@@ -50,7 +48,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
     }
   }
 
-  Future<void> _pickDateTime(bool isStart) async {
+    Future<void> _pickDateTime(bool isStart) async {
     final date = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -81,41 +79,30 @@ class _CreateEventPageState extends State<CreateEventPage> {
     });
   }
 
-  Future<void> _pickBannerImage() async {
-    try {
-      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile == null) {
-        print('No image selected.');
-        return;
-      }
 
-      final bytes = await pickedFile.readAsBytes();
+  Future<void> _pickImage() async {
+    final uploadInput = html.FileUploadInputElement()..accept = 'image/*';
+    uploadInput.click();
 
-      setState(() => _bannerImageBytes = bytes);
+    uploadInput.onChange.listen((event) {
+      final file = uploadInput.files?.first;
+      if (file == null) return;
 
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final ref = FirebaseStorage.instance.ref().child('Event - Banner/$fileName.png');
-      final metadata = SettableMetadata(contentType: 'image/png');
-
-      final uploadTask = await ref.putData(bytes, metadata);
-      final downloadUrl = await ref.getDownloadURL();
-
-      setState(() {
-        _bannerUrl = downloadUrl;
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onLoadEnd.listen((_) {
+        setState(() {
+          _bannerBytes = reader.result as Uint8List;
+        });
       });
+    });
+  }
 
-      print('Upload complete: $_bannerUrl');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Banner image uploaded")),
-      );
-    } catch (e, stack) {
-      print('Image upload failed: $e');
-      print('Stack trace: $stack');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Image upload failed: $e")),
-      );
-    }
+  Future<String> _uploadImage(Uint8List bytes, String path) async {
+    final ref = FirebaseStorage.instance.ref().child(path);
+    final metadata = SettableMetadata(contentType: 'image/jpeg');
+    await ref.putData(bytes, metadata);
+    return await ref.getDownloadURL();
   }
 
   Future<void> _createEvent() async {
@@ -123,6 +110,30 @@ class _CreateEventPageState extends State<CreateEventPage> {
         _startDateTime != null &&
         _endDateTime != null &&
         _selectedOrganization != null) {
+      if (_bannerBytes == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please upload a banner image.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Confirm Creation'),
+          content: const Text('Are you sure you want to create this event?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Confirm')),
+          ],
+        ),
+      );
+
+      if (confirm != true) return;
+
       try {
         final orgQuery = await FirebaseFirestore.instance
             .collection('organizations')
@@ -140,6 +151,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
         final orgDoc = orgQuery.docs.first.reference;
 
         final docRef = FirebaseFirestore.instance.collection('events').doc();
+        String bannerUrl = '';
+
+        if (_bannerBytes != null) {
+          bannerUrl = await _uploadImage(_bannerBytes!, 'Event - Banner/${docRef.id}.jpg');
+        }
+
         await docRef.set({
           'uid': docRef.id,
           'title': _titleController.text.trim(),
@@ -151,7 +168,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
           'type': _typeController.text.trim(),
           'datetimestart': _startDateTime,
           'datetimeend': _endDateTime,
-          'banner': _bannerUrl ?? '',
+          'banner': bannerUrl,
           'isVisible': true,
         });
 
@@ -190,20 +207,20 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   const Text("Event Banner", style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   GestureDetector(
-                    onTap: _pickBannerImage,
+                    onTap: _pickImage,
                     child: Container(
                       height: 180,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
-                        image: _bannerImageBytes != null
+                        image: _bannerBytes != null
                             ? DecorationImage(
-                                image: MemoryImage(_bannerImageBytes!),
+                                image: MemoryImage(_bannerBytes!),
                                 fit: BoxFit.cover,
                               )
                             : null,
                       ),
-                      child: _bannerImageBytes == null
+                      child: _bannerBytes == null
                           ? const Center(child: Text("Tap to select image"))
                           : null,
                     ),
