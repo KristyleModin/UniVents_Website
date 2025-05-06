@@ -19,7 +19,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  late Future<List<EventCard>> _futureEventCards;
+  late Future<List<EventsCard>> _futureEventCards;
   late Future<List<OrganizationCard>> _futureOrganizationCards;
   bool isDashboardExpanded = true;
 
@@ -30,7 +30,7 @@ class _DashboardState extends State<Dashboard> {
     _futureOrganizationCards = fetchOrganizationCards();
   }
 
-  Future<List<EventCard>> fetchEventCards() async {
+  Future<List<EventsCard>> fetchEventCards() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .where('isVisible', isEqualTo: true)
@@ -39,7 +39,7 @@ class _DashboardState extends State<Dashboard> {
     return snapshot.docs.map((doc) {
       final Map<String, dynamic> data = doc.data();
       final eventRef = doc.reference;
-      return EventCard.fromMap(
+      return EventsCard.fromMap(
         data,
         eventRef,
         onVisibilityChanged: () {
@@ -334,7 +334,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                FutureBuilder<List<EventCard>>(
+                FutureBuilder<List<EventsCard>>(
                   future: _futureEventCards,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

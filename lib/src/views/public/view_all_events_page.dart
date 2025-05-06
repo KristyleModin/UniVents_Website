@@ -12,7 +12,7 @@ class ViewAllEventsPage extends StatefulWidget {
 }
 
 class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
-  late Future<List<EventCard>> _futureEventsCards;
+  late Future<List<EventsCard>> _futureEventsCards;
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
     _futureEventsCards = fetchAllEventCards();
   }
 
-  Future<List<EventCard>> fetchAllEventCards() async {
+  Future<List<EventsCard>> fetchAllEventCards() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .get();
@@ -29,7 +29,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
       final data = doc.data();
       final eventRef = doc.reference;
 
-      return EventCard.fromMap(
+      return EventsCard.fromMap(
         data,
         eventRef,
         onVisibilityChanged: () async {
@@ -53,7 +53,7 @@ class _ViewAllEventsPageState extends State<ViewAllEventsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: FutureBuilder<List<EventCard>>(
+        child: FutureBuilder<List<EventsCard>>(
           future: _futureEventsCards,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

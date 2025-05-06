@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -151,7 +153,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
           'datetimeend': _endDateTime,
           'banner': _bannerUrl ?? '',
           'isVisible': true,
-          'createdAt': FieldValue.serverTimestamp(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -176,7 +177,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
       appBar: AppBar(
         title: const Text("Create New Event"),
         backgroundColor: const Color(0xFF182C8C),
-        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

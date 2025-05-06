@@ -1,9 +1,11 @@
+// ignore_for_file: deprecated_member_use, avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:univents/src/views/public/event_details.dart';
 
-class EventCard extends StatefulWidget {
+class EventsCard extends StatefulWidget {
   final String title;
   final String banner;
   final DateTime dateTimeStart;
@@ -18,7 +20,7 @@ class EventCard extends StatefulWidget {
   final VoidCallback? onVisibilityChanged;
   final bool isVisible;
 
-  const EventCard({
+  const EventsCard({
     super.key,
     required this.title,
     required this.banner,
@@ -35,7 +37,7 @@ class EventCard extends StatefulWidget {
     required this.isVisible,
   });
 
-  factory EventCard.fromMap(
+  factory EventsCard.fromMap(
     Map<String, dynamic> map,
     DocumentReference eventRef, {
     VoidCallback? onVisibilityChanged,
@@ -43,7 +45,7 @@ class EventCard extends StatefulWidget {
     final Timestamp startTimestamp = map['datetimestart'];
     final Timestamp endTimestamp = map['datetimeend'];
 
-    return EventCard(
+    return EventsCard(
       title: map['title'] ?? '',
       banner: map['banner'] ?? '',
       dateTimeStart: startTimestamp.toDate(),
@@ -61,10 +63,10 @@ class EventCard extends StatefulWidget {
   }
 
   @override
-  State<EventCard> createState() => _EventCardState();
+  State<EventsCard> createState() => _EventsCardState();
 }
 
-class _EventCardState extends State<EventCard> {
+class _EventsCardState extends State<EventsCard> {
   late bool _isVisible;
   String? _orgName;
 
@@ -117,7 +119,7 @@ class _EventCardState extends State<EventCard> {
       opacity: _isVisible ? 1.0 : 0.4,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        height: 320,
+        height: 300,
         width: 250,
         child: InkWell(
           onTap: () {
